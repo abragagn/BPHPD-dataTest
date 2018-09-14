@@ -38,7 +38,7 @@ void fitBs(TString fileName = "ntu2018B.root"){
 
     for(int i=0; i<cuts.size(); ++i){
 
-        TH1 *histMass = new TH1F("histMass","",250,5.0,5.5);
+        TH1 *histMass = new TH1F("histMass","",250,5.0,5.6);
         TH1 *histCt = new TH1F("histCt","",100,0.0,0.5);
         TString cut = cuts[i];
         TString name = "ch" + run + "/" + "bsMass_" + names[i] + "_" + run;
@@ -86,7 +86,7 @@ void fitPeak(TH1 *hist, TString name){
     TString bkgDef = "[7]+[8]*TMath::Erfc([9]*(x-[10]))";
     TString funcDef = sgnDef + "+" + bkgDef;
 
-    TF1 *func = new TF1("func", funcDef, 5.0, 5.5);
+    TF1 *func = new TF1("func", funcDef, 5.0, 5.6);
 
     func->SetParameter(0, mean);
 
@@ -126,11 +126,11 @@ void fitPeak(TH1 *hist, TString name){
     TF1 *fit = hist->GetFunction("func");
     fit->Draw("same");
     
-    TF1 *f1 = new TF1("f1","[0]*TMath::Gaus(x, [1], [2], true)", min_, max_);
-    TF1 *f2 = new TF1("f2","[0]*TMath::Gaus(x, [1], [2], true)", min_, max_);
-    TF1 *f3 = new TF1("f3","[0]*TMath::Gaus(x, [1], [2], true)", min_, max_);
-    TF1 *f4 = new TF1("f4","[0]", min_, max_);
-    TF1 *f5 = new TF1("f5","[0]*TMath::Erfc([1]*(x-[2]))", min_, max_);
+    TF1 *f1 = new TF1("f1","[0]*TMath::Gaus(x, [1], [2], true)", 5.0, 5.6);
+    TF1 *f2 = new TF1("f2","[0]*TMath::Gaus(x, [1], [2], true)", 5.0, 5.6);
+    TF1 *f3 = new TF1("f3","[0]*TMath::Gaus(x, [1], [2], true)", 5.0, 5.6);
+    TF1 *f4 = new TF1("f4","[0]", 5.0, 5.6);
+    TF1 *f5 = new TF1("f5","[0]*TMath::Erfc([1]*(x-[2]))", 5.0, 5.6);
 
     f1->SetParameters(fit->GetParameter(1),fit->GetParameter(0),fit->GetParameter(4));
     f2->SetParameters(fit->GetParameter(2),fit->GetParameter(0),fit->GetParameter(5));
