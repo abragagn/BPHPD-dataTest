@@ -20,11 +20,11 @@ void fitBs(TString fileName = "ntu2018B.root"){
     cuts.push_back(std::make_pair("(hltFired & 4)&&!(hltFired & 2)","JPsiTrkTrk"));
     cuts.push_back(std::make_pair("(hltFired & 8)&&!(hltFired & 2)&&!(hltFired & 4)","JPsiTrk"));
     
-    cuts.push_back(std::make_pair("(hltFired & 8)&&!(hltFired & 2)","JPsiTrkInverted");
-    cuts.push_back(std::make_pair("(hltFired & 4)&&!(hltFired & 2)&&!(hltFired & 8)","JPsiTrkTrkInverted");
+    cuts.push_back(std::make_pair("(hltFired & 8)&&!(hltFired & 2)","JPsiTrkInverted"));
+    cuts.push_back(std::make_pair("(hltFired & 4)&&!(hltFired & 2)&&!(hltFired & 8)","JPsiTrkTrkInverted"));
                    
-    cuts.push_back(std::make_pair("(hltFired & 4)","JPsiTrkTrkNoVeto");
-    cuts.push_back(std::make_pair("(hltFired & 8)","JPsiTrkNoVeto");
+    cuts.push_back(std::make_pair("(hltFired & 4)","JPsiTrkTrkNoVeto"));
+    cuts.push_back(std::make_pair("(hltFired & 8)","JPsiTrkNoVeto"));
 
     for(int i=0; i<cuts.size(); ++i){
 
