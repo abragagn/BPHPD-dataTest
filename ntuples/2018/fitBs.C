@@ -12,23 +12,29 @@ void fitBs(TString fileName = "ntu2018B.root"){
 
     vector<TString> cuts;
     vector<TString> names;
-      cuts.clear(); 
-      names.clear();
+    cuts.clear(); 
+    names.clear();
 
-      cuts.push_back("(hltFired & 2)");
-      names.push_back("JPsiMuon");
+    cuts.push_back("(hltFired & 2)");
+    names.push_back("JPsiMuon");
 
-      cuts.push_back("(hltFired & 4)&&!(hltFired & 2)");
-      names.push_back("JPsiTrkTrk");
+    cuts.push_back("(hltFired & 4)&&!(hltFired & 2)");
+    names.push_back("JPsiTrkTrk");
 
-      cuts.push_back("(hltFired & 8)&&!(hltFired & 2)&&!(hltFired & 4)");
-      names.push_back("JPsiTrk");
+    cuts.push_back("(hltFired & 8)&&!(hltFired & 2)&&!(hltFired & 4)");
+    names.push_back("JPsiTrk");
 
-      cuts.push_back("(hltFired & 8)&&!(hltFired & 2)");
-      names.push_back("JPsiTrkInverted");
+    cuts.push_back("(hltFired & 8)&&!(hltFired & 2)");
+    names.push_back("JPsiTrkInverted");
 
-      cuts.push_back("(hltFired & 4)&&!(hltFired & 2)&&!(hltFired & 8)");
-      names.push_back("JPsiTrkTrkInverted");
+    cuts.push_back("(hltFired & 4)&&!(hltFired & 2)&&!(hltFired & 8)");
+    names.push_back("JPsiTrkTrkInverted");
+    
+    cuts.push_back("(hltFired & 4)");
+    names.push_back("JPsiTrkTrkNoVeto");
+    
+    cuts.push_back("(hltFired & 8)");
+    names.push_back("JPsiTrkNoVeto");
 
     for(int i=0; i<cuts.size(); ++i){
 
