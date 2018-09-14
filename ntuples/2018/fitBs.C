@@ -35,8 +35,8 @@ void fitBs(TString fileName = "ntu2018B.root"){
         TH1 *histMass = new TH1F("histMass","",250,5.0,5.5);
         TH1 *histCt = new TH1F("histCt","",100,0.0,0.5);
         TString cut = cuts[i];
-        TString name = "ch" + run + "/" + "bsMass_" + names[i] + "_2018" + run;
-        TString nameCt = "ch" + run + "/" + "bsCt_" + names[i] + "_2018" + run;
+        TString name = "ch" + run + "/" + "bsMass_" + names[i] + run;
+        TString nameCt = "ch" + run + "/" + "bsCt_" + names[i] + run;
         TCanvas c1;
 
         t->Project("histMass", "bsMass", cut);
