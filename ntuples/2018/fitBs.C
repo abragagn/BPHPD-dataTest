@@ -124,7 +124,36 @@ void fitPeak(TH1 *hist, TString name){
     hist->SetMinimum(0);
 
     TF1 *fit = hist->GetFunction("func");
-    fit->Draw("SAME");
+    fit->Draw("same");
+    
+    TF1 *f1 = new TF1("f1","[0]*TMath::Gaus(x, [1], [2], true)", min_, max_);
+    TF1 *f2 = new TF1("f2","[0]*TMath::Gaus(x, [1], [2], true)", min_, max_);
+    TF1 *f3 = new TF1("f3","[0]*TMath::Gaus(x, [1], [2], true)", min_, max_);
+    TF1 *f4 = new TF1("f4","[0]", min_, max_);
+    TF1 *f5 = new TF1("f5","[0]*TMath::Erfc([1]*(x-[2]))", min_, max_);
+
+    f1->SetParameters(fit->GetParameter(1),fit->GetParameter(0),fit->GetParameter(4));
+    f2->SetParameters(fit->GetParameter(2),fit->GetParameter(0),fit->GetParameter(5));
+    f3->SetParameters(fit->GetParameter(3),fit->GetParameter(0),fit->GetParameter(6));
+    f4->SetParameter(0, fit->GetParameter(7));
+    f5->SetParameters(fit->GetParameter(8),fit->GetParameter(9),fit->GetParameter(10));
+
+    f1->SetLineColor(kBlue);
+    f2->SetLineColor(kViolet);
+    f3->SetLineColor(kAzure);
+    f4->SetLineColor(kOrange);
+    f5->SetLineColor(kGreen);
+    f1->SetLineStyle(2);
+    f2->SetLineStyle(2);
+    f3->SetLineStyle(2);
+    f4->SetLineStyle(2);
+    f5->SetLineStyle(2);
+
+    f1->Draw("same");
+    f2->Draw("same");
+    f3->Draw("same");
+    f4->Draw("same");
+    f5->Draw("same");
 
     float nEvt = fit->GetParameter(1);
     nEvt += fit->GetParameter(2);
