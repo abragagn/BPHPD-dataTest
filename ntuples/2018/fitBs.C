@@ -12,39 +12,27 @@ void fitBs(TString fileName = "ntu2018B.root"){
     TString run = fileName(3,5);
     TTree *t = (TTree*)f->Get("PDsecondTree");
 
-    vector<TString> cuts;
-    vector<TString> names;
-    cuts.clear(); 
-    names.clear();
+    vector<pair<TString, TString>> cuts;
 
-    cuts.push_back("(hltFired & 2)");
-    names.push_back("JPsiMuon");
-
-    cuts.push_back("(hltFired & 4)&&!(hltFired & 2)");
-    names.push_back("JPsiTrkTrk");
-
-    cuts.push_back("(hltFired & 8)&&!(hltFired & 2)&&!(hltFired & 4)");
-    names.push_back("JPsiTrk");
-
-    cuts.push_back("(hltFired & 8)&&!(hltFired & 2)");
-    names.push_back("JPsiTrkInverted");
-
-    cuts.push_back("(hltFired & 4)&&!(hltFired & 2)&&!(hltFired & 8)");
-    names.push_back("JPsiTrkTrkInverted");
+    cuts.clear();
     
-    cuts.push_back("(hltFired & 4)");
-    names.push_back("JPsiTrkTrkNoVeto");
+    cuts.push_back(std::make_pair("(hltFired & 2)","JPsiMuon"));
+    cuts.push_back(std::make_pair("(hltFired & 4)&&!(hltFired & 2)","JPsiTrkTrk"));
+    cuts.push_back(std::make_pair("(hltFired & 8)&&!(hltFired & 2)&&!(hltFired & 4)","JPsiTrk"));
     
-    cuts.push_back("(hltFired & 8)");
-    names.push_back("JPsiTrkNoVeto");
+    cuts.push_back(std::make_pair("(hltFired & 8)&&!(hltFired & 2)","JPsiTrkInverted");
+    cuts.push_back(std::make_pair("(hltFired & 4)&&!(hltFired & 2)&&!(hltFired & 8)","JPsiTrkTrkInverted");
+                   
+    cuts.push_back(std::make_pair("(hltFired & 4)","JPsiTrkTrkNoVeto");
+    cuts.push_back(std::make_pair("(hltFired & 8)","JPsiTrkNoVeto");
 
     for(int i=0; i<cuts.size(); ++i){
 
         TH1 *histMass = new TH1F("histMass","",250,min_,max_);
         TH1 *histCt = new TH1F("histCt","",100,0.0,0.5);
-        TString cut = cuts[i];
-        TString name = "ch" + run + "/" + "bsMass_" + names[i] + "_" + run;
-        TString nameCt = "ch" + run + "/" + "bsCt_" + names[i] + "_" + run;
+        TString cut = cuts[i].first;
+        TString name = "ch" + run + "/" + "bsMass_" + cuts[i].second + "_" + run;
+        TString nameCt = "ch" + run + "/" + "bsCt_" + cuts[i].second + "_" + run;
         TCanvas c1;
 
         t->Project("histMass", "bsMass", cut);
