@@ -3,13 +3,13 @@ void fitPeak(TH1 *hist, TString name);
 float min_ = 5.1;
 float max_ = 5.6;
 
-void fitBs(TString fileName = "ntu2018B.root"){
+void fitBs(TString fileName = "ntu2018Av1.root"){
 
     gErrorIgnoreLevel = kFatal;
     gStyle->SetOptStat(0);
 
     TFile *f = new TFile(fileName);
-    TString run = fileName(3,5);
+    TString run = fileName(3,7);
     TTree *t = (TTree*)f->Get("PDsecondTree");
 
     vector<pair<TString, TString>> cuts;
