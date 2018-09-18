@@ -30,7 +30,7 @@ void fitBs(TString fileName = "ntu2018Av1.root"){
 
         TH1 *histMass = new TH1F("histMass","",250,min_,max_);
         TH1 *histCt = new TH1F("histCt","",100,0.0,0.5);
-        TString cut = cuts[i].first + "&&(1==1)"; //???????
+        TString cut = cuts[i].first + "&&1"; 
         TString name = "ch" + run + "/" + "bsMass_" + cuts[i].second + "_" + run;
         TString nameCt = "ch" + run + "/" + "bsCt_" + cuts[i].second + "_" + run;
         TCanvas c1;
