@@ -2,6 +2,7 @@ float counting(TF1 *fit);
 void fitPeak(TH1 *hist, TString name);
 float min_ = 5.1;
 float max_ = 5.6;
+int nBins_ = 125;
 
 void fitBs(TString fileName = "ntu2018Av1.root"){
 
@@ -16,20 +17,20 @@ void fitBs(TString fileName = "ntu2018Av1.root"){
 
     cuts.clear();
     
-    cuts.push_back(std::make_pair("(hltFired & 2)","JPsiMuon"));
-    cuts.push_back(std::make_pair("(hltFired & 4)&&!(hltFired & 2)","JPsiTrkTrk"));
-    cuts.push_back(std::make_pair("(hltFired & 8)&&!(hltFired & 2)&&!(hltFired & 4)","JPsiTrk"));
+    cuts.push_back(std::make_pair("(hltFired & 1<<1)","JPsiMuon"));
+    cuts.push_back(std::make_pair("(hltFired & 1<<2)&&!(hltFired & 1<<1)","JPsiTrkTrk"));
+    cuts.push_back(std::make_pair("(hltFired & 1<<3)&&!(hltFired & 1<<1)&&!(hltFired & 1<<2)","JPsiTrk"));
     
-    cuts.push_back(std::make_pair("(hltFired & 8)&&!(hltFired & 2)","JPsiTrkInverted"));
-    cuts.push_back(std::make_pair("(hltFired & 4)&&!(hltFired & 2)&&!(hltFired & 8)","JPsiTrkTrkInverted"));
+    //cuts.push_back(std::make_pair("(hltFired & 8)&&!(hltFired & 2)","JPsiTrkInverted"));
+    //cuts.push_back(std::make_pair("(hltFired & 4)&&!(hltFired & 2)&&!(hltFired & 8)","JPsiTrkTrkInverted"));
                    
-    cuts.push_back(std::make_pair("(hltFired & 4)","JPsiTrkTrkNoVeto"));
-    cuts.push_back(std::make_pair("(hltFired & 8)","JPsiTrkNoVeto"));
+    cuts.push_back(std::make_pair("(hltFired & 1<<2)","JPsiTrkTrkNoVeto"));
+    cuts.push_back(std::make_pair("(hltFired & 1<<3)","JPsiTrkNoVeto"));
 
     for(int i=0; i<cuts.size(); ++i){
 
-        TH1 *histMass = new TH1F("histMass","",250,min_,max_);
-        TH1 *histCt = new TH1F("histCt","",100,0.0,0.5);
+        TH1 *histMass = new TH1F("histMass","",nBins_,min_,max_);
+        TH1 *histCt = new TH1F("histCt","",100,0.0,0.6);
         TString cut = cuts[i].first + "&&1"; 
         TString name = "ch" + run + "/" + "bsMass_" + cuts[i].second + "_" + run;
         TString nameCt = "ch" + run + "/" + "bsCt_" + cuts[i].second + "_" + run;
@@ -88,31 +89,39 @@ void fitPeak(TH1 *hist, TString name){
     func->SetParameter(5, sigma);
     func->SetParameter(6, sigma);
 
-    func->SetParameter(7, hist->GetBinContent(250-1));
+    func->SetParameter(7, hist->GetBinContent(nBins_-1));
     func->SetParameter(8, 1);
     func->SetParameter(9, 20);
     func->SetParameter(10, 5.10);
 
     func->SetParLimits(0, mean-sigma, mean+sigma);
 
-    func->SetParLimits(1, 0, hist->GetEntries());
-    func->SetParLimits(2, 0, hist->GetEntries());
-    func->SetParLimits(3, 0, hist->GetEntries());
+    func->SetParLimits(1, 0, hist->GetEntries()/2);
+    func->SetParLimits(2, 0, hist->GetEntries()/2);
+    func->SetParLimits(3, 0, hist->GetEntries()/2);
 
-    func->SetParLimits(4, 0, sigma*2);
-    func->SetParLimits(5, 0, sigma*2);
-    func->SetParLimits(6, 0, sigma*2);
+    func->SetParLimits(4, sigma/2, sigma*2);
+    func->SetParLimits(5, sigma/2, sigma*2);
+    func->SetParLimits(6, sigma/2, sigma*2);
 
-    func->SetParLimits(7, 0, hist->GetBinContent(250-1)*1.5);
-    func->SetParLimits(8, 0, hist->GetBinContent(250-1));
+    func->SetParLimits(7, 0, hist->GetBinContent(nBins_-1)*1.5);
+    func->SetParLimits(8, 0, hist->GetBinContent(nBins_-1));
     func->SetParLimits(9, 10, 1e3);
     func->SetParLimits(10, min_, mean);
 
+    //GRAPHICS
+
+
     TCanvas c1;
-    hist->Draw("HIST");
+    hist->Draw("PE1");
     hist->Fit("func","MRLQ");
     hist->SetMinimum(0);
-
+    func->SetLineWidth(2);
+    func->SetNpx(5000);
+    hist->SetMarkerColor(1);
+    hist->SetMarkerStyle(20);
+    hist->SetMarkerSize(0.8);
+    
     TF1 *fit = hist->GetFunction("func");
     fit->Draw("same");
     
@@ -138,6 +147,12 @@ void fitPeak(TH1 *hist, TString name){
     f3->SetLineStyle(2);
     f4->SetLineStyle(2);
     f5->SetLineStyle(2);
+    f1->SetLineWidth(2);
+    f2->SetLineWidth(2);
+    f3->SetLineWidth(2);
+    f4->SetLineWidth(2);
+    f5->SetLineWidth(2);
+
 
     f1->Draw("same");
     f2->Draw("same");

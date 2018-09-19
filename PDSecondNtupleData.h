@@ -21,6 +21,7 @@ PDSecondNtupleData() {
     hltFired  = new vector <int>;
     isTight   = new vector <int>;
     hasMuon   = new vector <int>;
+    utility   = new vector <int>;
 
 
 
@@ -41,14 +42,15 @@ void initTree() {
     setBranch( "hltFired", &hltFired , 8192, 99, &b_hltFired );
     setBranch( "isTight", &isTight , 8192, 99, &b_isTight );
     setBranch( "hasMuon", &hasMuon , 8192, 99, &b_hasMuon );
+    setBranch( "utility", &utility , 8192, 99, &b_utility );
 
 }
 
-    vector <int> *hltFired, *isTight, *hasMuon;
+    vector <int> *hltFired, *isTight, *hasMuon, *utility;
     vector <float> *bsMass, *bsCt, *bsPt, *bsEta, *bsPhi;
 
     TBranch *b_bsMass, *b_bsCt, *b_bsPt, *b_bsEta, *b_bsPhi;
-    TBranch *b_hltFired, *b_isTight, *b_hasMuon;
+    TBranch *b_hltFired, *b_isTight, *b_hasMuon, *b_utility;
 
     private:
 

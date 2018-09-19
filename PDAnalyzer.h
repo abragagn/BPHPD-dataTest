@@ -70,6 +70,10 @@ class PDAnalyzer: public virtual PDAnalyzerUtil
     int nselMu;
     int nselFake;
 
+    int francescoSelectionTest1();
+    int francescoSelectionTest2();
+    int francescoSelectionTest3();
+
 
 // additional features: second ntuple
     PDSecondNtupleWriter* tWriter;                 // second ntuple
