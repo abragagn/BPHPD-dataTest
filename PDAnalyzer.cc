@@ -138,7 +138,6 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
         iSsB = iSsBtight;
     };
     if(francescoSelectionTest1()>=0) utility += 1<<1;
-    if(francescoSelectionTest2()>=0) utility += 1<<2;
 
     vector <int> tkSsB = tracksFromSV(iSsB);
     int iJPsi = (subVtxFromSV(iSsB)).at(0);
@@ -176,10 +175,6 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     (tWriter->utility)->push_back( utility );
     (tWriter->hltFired)->push_back( hltfired_ );
 
-    //-----------------------------------------OPPOSITE SIDE-----------------------------------------
-
-    //-----------------------------------------SELECTION--------------------------------------------
-
     tWriter->fill();
 
 
@@ -216,21 +211,6 @@ void PDAnalyzer::save() {
 }
 
 
-// to plot some histogram immediately after the ntuple loop
-// "uncomment" the following lines
-/*
-void PDAnalyzer::plot() {
-    TCanvas* can = new TCanvas( "muoPt", "muoPt", 800, 600 );
-    can->cd();
-    can->Divide( 1, 2 );
-    can->cd( 1 );
-    hptmumax->Draw();
-    hptmu2nd->Draw();
-    return;
-}
-*/
-
-
 // ======MY FUNCTIONS===============================================================================
 int PDAnalyzer::francescoSelectionTest1()
 {
@@ -262,87 +242,6 @@ int PDAnalyzer::francescoSelectionTest1()
            tJPsi += a;
         }
 
-
-        if(tJPsi.Pt() < 7.0) continue;
-
-       //PHI
-        if(fabs(svtMass->at(iPhi) - MassPhi) > 0.01 ) continue;
-        if(trkPt->at(tkPhi[0]) < 0.7) continue;
-        if(trkPt->at(tkPhi[1]) < 0.7) continue;
-        if(fabs(trkEta->at(tkPhi[0])) > 2.5) continue;
-        if(fabs(trkEta->at(tkPhi[1])) > 2.5) continue;
-
-        int Kp_Hits = trkHitPattern->at(tkPhi[0]);
-        int Km_Hits = trkHitPattern->at(tkPhi[1]);
-
-        int kpnpst = ( int(Kp_Hits) / 100 ) % 10000;
-        int kpntrk = kpnpst % 100;
-
-        int kmnpst = ( int(Km_Hits) / 100 ) % 10000;
-        int kmntrk = kmnpst % 100;
-
-        if (kmntrk<4 || kpntrk<4 ) continue;
-
-        //BS
-        if( svtMass->at(iB)<5.2 || svtMass->at(iB)>5.65 ) continue;
-        if((svtDist2D->at(iB)/svtSigma2D->at(iB)) < 3) continue;
-        if((svtDist2D->at(iB)) < 0.02) continue;
-
-        TLorentzVector tB(0,0,0,0);
-
-        for( unsigned int i=0; i<tkSsB.size(); ++i ){
-            int j = tkSsB[i];
-            float m = MassK;
-            if( j == tkJpsi[0] || j == tkJpsi[1] ) m = MassMu;
-            TLorentzVector a;
-            a.SetPtEtaPhiM( trkPt->at(j), trkEta->at(j), trkPhi->at(j), m );
-            tB += a;
-        }
-
-        if(tB.Pt() < 8.0) continue;
-        if(fabs(tB.Eta()) > 2.4) continue;
-
-        if( ChiSquaredProbability( svtChi2->at(iB), svtNDOF->at(iB) ) < 0.02 ) continue;
-
-        if( svtChi2->at(iB)>bestChi2 ) continue;
-        index = iB;
-        bestChi2 = svtChi2->at(iB);
-
-        }
-        return index;
-}
-
-
-int PDAnalyzer::francescoSelectionTest2()
-{
-    int index = -1;
-    float bestChi2 = 1e9;
-    for( unsigned short int iB=0; iB<nSVertices; ++iB ){
-
-       if((svtType->at(iB)!=PDEnumString::svtBsJPsiPhi) ) continue;
-
-       int iJPsi = (subVtxFromSV(iB)).at(0);
-       int iPhi = (subVtxFromSV(iB)).at(1);
-       vector <int> tkSsB = tracksFromSV(iB);
-       vector <int> tkJpsi = tracksFromSV(iJPsi);
-       vector <int> tkPhi = tracksFromSV(iPhi);
-
-       //JPSI
-        if(fabs(svtMass->at(iJPsi) - MassJPsi) > 0.15 ) continue;
-
-        if(trkPt->at(tkJpsi[0]) < 4.0 ) continue;
-        if(trkPt->at(tkJpsi[1]) < 4.0 ) continue;
-        if(fabs(trkEta->at(tkJpsi[0])) > 2.1) continue;
-        if(fabs(trkEta->at(tkJpsi[1])) > 2.1) continue;
-
-        TLorentzVector tJPsi(0,0,0,0);
-
-        for( unsigned int i=0; i<tkJpsi.size(); ++i ){
-           int j = tkJpsi[i];
-           TLorentzVector a;
-           a.SetPtEtaPhiM( trkPt->at(j), trkEta->at(j), trkPhi->at(j), MassMu );
-           tJPsi += a;
-        }
 
         if(tJPsi.Pt() < 7.0) continue;
 
