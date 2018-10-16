@@ -13,18 +13,18 @@ void Reset()  { autoReset(); }
 PDSecondNtupleData() {
 
     bsMass    = new vector <float>;
-    bsCt      = new vector <float>;
     bsPt      = new vector <float>;
     bsEta     = new vector <float>;
     bsPhi     = new vector <float>;
+
+    bsLxy     = new vector <float>;
+    bsCtau    = new vector <float>;
+    bsCtau3D  = new vector <float>;
 
     hltFired  = new vector <int>;
     isTight   = new vector <int>;
     hasMuon   = new vector <int>;
     utility   = new vector <int>;
-
-
-
 
 }
 virtual ~PDSecondNtupleData() {}
@@ -33,7 +33,10 @@ void initTree() {
     treeName = "PDsecondTree";
 
     setBranch( "bsMass", &bsMass , 8192, 99, &b_bsMass );
-    setBranch( "bsCt", &bsCt , 8192, 99, &b_bsCt );
+    
+    setBranch( "bsLxy", &bsLxy , 8192, 99, &b_bsLxy );
+    setBranch( "bsCtau", &bsCtau , 8192, 99, &b_bsCtau );
+    setBranch( "bsCtau3D", &bsCtau3D , 8192, 99, &b_bsCtau3D );
 
     setBranch( "bsPt", &bsPt , 8192, 99, &b_bsPt );
     setBranch( "bsEta", &bsEta , 8192, 99, &b_bsEta );
@@ -47,9 +50,9 @@ void initTree() {
 }
 
     vector <int> *hltFired, *isTight, *hasMuon, *utility;
-    vector <float> *bsMass, *bsCt, *bsPt, *bsEta, *bsPhi;
+    vector <float> *bsMass, *bsLxy, *bsPt, *bsEta, *bsPhi, *bsCtau, *bsCtau3D;
 
-    TBranch *b_bsMass, *b_bsCt, *b_bsPt, *b_bsEta, *b_bsPhi;
+    TBranch *b_bsMass, *b_bsLxy, *b_bsPt, *b_bsEta, *b_bsPhi, *b_bsCtau, *b_bsCtau3D;
     TBranch *b_hltFired, *b_isTight, *b_hasMuon, *b_utility;
 
     private:

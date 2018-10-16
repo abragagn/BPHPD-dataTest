@@ -13,6 +13,8 @@
 #include "TCanvas.h"
 #include "TLorentzVector.h"
 #include "TFile.h"
+#include "TMatrixF.h"
+#include "TVectorF.h"
 
 // additional features
 #include "PDSecondNtupleWriter.h"                               // second ntuple
@@ -143,7 +145,7 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     int iJPsi = (subVtxFromSV(iSsB)).at(0);
     vector <int> tkJpsi = tracksFromSV(iJPsi);
 
-    TLorentzVector t(0,0,0,0);
+    TLorentzVector tB(0,0,0,0);
 
     for(unsigned int i=0; i<tkSsB.size(); ++i){
         int j = tkSsB.at(i);
@@ -151,12 +153,30 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
         if( (j==tkJpsi.at(0)) || (j==tkJpsi.at(1)) ) m = MassMu;
         TLorentzVector a;
         a.SetPtEtaPhiM( trkPt->at(j), trkEta->at(j), trkPhi->at(j), m );
-        t += a;
+        tB += a;
     }
 
     float ssBDz = 0;
     for( unsigned int i=0; i<tkSsB.size(); ++i ) ssBDz+=trkDz->at(tkSsB[i]);
     ssBDz/=tkSsB.size();
+
+     int iPV = GetBestPV(iSsB, tB);
+    if(iPV<=0) return false;
+
+    TVector3 vSVT( svtX->at(iSsB), svtY->at(iSsB), svtZ->at(iSsB) );
+    TVector3 vPV( pvtX->at(iPV), pvtY->at(iPV), pvtZ->at(iPV) );
+    TVector3 vBeamSpot( bsX, bsY, bsZ );
+    
+    TVector3 vPointing = vSVT - vPV;
+    TVector3 vPointingBeamSpot = vSVT - vBeamSpot;
+    TVector3 vBs = tB.Vect();
+
+    float Lxy3D = MassBs/tB.P() * vPointing.Dot(vBs)/vBs.Mag();;
+
+    vBs.SetZ(0.);
+    vPointingBeamSpot.SetZ(0.);
+    float LxyLab = vPointingBeamSpot * vBs.Unit();
+    float Lxy = MassBs/tB.Pt() * LxyLab;
 
     int hltfired_ = 0;
 
@@ -165,11 +185,13 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     if(hlt(PDEnumString::HLT_DoubleMu4_JpsiTrk_Displaced_v)) hltfired_ += 1<<3;
 
     (tWriter->bsMass)->push_back( svtMass->at(iSsB) );
-    (tWriter->bsCt)->push_back( svtDist3D->at(iSsB) );
+    (tWriter->bsLxy)->push_back( LxyLab );
+    (tWriter->bsCtau)->push_back( Lxy );
+    (tWriter->bsCtau3D)->push_back( Lxy3D );
 
-    (tWriter->bsPt)->push_back( t.Pt() );
-    (tWriter->bsEta)->push_back( t.Eta() );
-    (tWriter->bsPhi)->push_back( t.Phi() );
+    (tWriter->bsPt)->push_back( tB.Pt() );
+    (tWriter->bsEta)->push_back( tB.Eta() );
+    (tWriter->bsPhi)->push_back( tB.Phi() );
 
     (tWriter->isTight)->push_back( tight );
     (tWriter->utility)->push_back( utility );
@@ -212,7 +234,7 @@ void PDAnalyzer::save() {
 
 
 // ======MY FUNCTIONS===============================================================================
-int PDAnalyzer::francescoSelectionTest1()
+int PDAnalyzer::francescoSelectionTest1() // no ct cut
 {
     int index = -1;
     float bestChi2 = 1e9;
@@ -265,8 +287,6 @@ int PDAnalyzer::francescoSelectionTest1()
 
         //BS
         if( svtMass->at(iB)<5.2 || svtMass->at(iB)>5.65 ) continue;
-        if((svtDist2D->at(iB)/svtSigma2D->at(iB)) < 3) continue;
-        if((svtDist2D->at(iB)) < 0.02) continue;
 
         TLorentzVector tB(0,0,0,0);
 
