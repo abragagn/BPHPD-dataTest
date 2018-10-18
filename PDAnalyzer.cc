@@ -132,14 +132,14 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     int iSsB = GetBestBstrange();
     if(iSsB<0) return false;
 
-    bool tight = false;
-    int utility = 0;
+    bool _tight = false;
+    int _utility = 0;
     int iSsBtight = GetBestBstrangeTight();
     if(iSsBtight>=0) {
-        tight = true;
+        _tight = true;
         iSsB = iSsBtight;
     };
-    if(francescoSelectionTest1()>=0) utility += 1<<1;
+    if(francescoSelectionTest1()>=0) _utility += 1<<1;
 
     vector <int> tkSsB = tracksFromSV(iSsB);
     int iJPsi = (subVtxFromSV(iSsB)).at(0);
@@ -184,17 +184,22 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     if(hlt(PDEnumString::HLT_DoubleMu4_JpsiTrkTrk_Displaced_v)) _hltfired += 1<<2;
     if(hlt(PDEnumString::HLT_DoubleMu4_JpsiTrk_Displaced_v)) _hltfired += 1<<3;
 
-    (tWriter->bsMass) = svtMass->at(iSsB);
-    (tWriter->bsLxy) = Lxy;
-    (tWriter->bsCTxy) = ct;
-    (tWriter->bsCTxyz) = ct3D;
 
+    (tWriter->run) = runNumber;
+    (tWriter->evt) = eventNumber;
+    (tWriter->lumi) = lumiSection;
+
+    (tWriter->bsMass) = svtMass->at(iSsB);
     (tWriter->bsPt) = tB.Pt();
     (tWriter->bsEta) = tB.Eta();
     (tWriter->bsPhi) = tB.Phi();
 
-    (tWriter->isTight) = tight;
-    (tWriter->utility) = utility;
+    (tWriter->bsLxy) = Lxy;
+    (tWriter->bsCt2D) = ct;
+    (tWriter->bsCt3D) = ct3D;
+
+    (tWriter->isTight) = _tight;
+    (tWriter->utility) = _utility;
     (tWriter->hltFired) = _hltfired;
 
     tWriter->fill();

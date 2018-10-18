@@ -19,15 +19,19 @@ virtual ~PDSecondNtupleData() {}
 void initTree() {
     treeName = "PDsecondTree";
 
-    setBranch( "bsMass", &bsMass , "bsMass/F" , &b_bsMass );
-    
-    setBranch( "bsLxy", &bsLxy , "bsLxy/F" , &b_bsLxy );
-    setBranch( "bsCTxy", &bsCTxy , "bsCTxy/F" , &b_bsCTxy );
-    setBranch( "bsCTxyz", &bsCTxyz , "bsCTxyz/F" , &b_bsCTxyz );
+    setBranch( "run", &run , "run/I" , &b_run );
+    setBranch( "evt", &evt , "evt/I" , &b_evt );
+    setBranch( "lumi", &lumi , "lumi/I" , &b_lumi );
 
+    setBranch( "bsMass", &bsMass , "bsMass/F" , &b_bsMass );
     setBranch( "bsPt", &bsPt , "bsPt/F" , &b_bsPt );
     setBranch( "bsEta", &bsEta , "bsEta/F" , &b_bsEta );
     setBranch( "bsPhi", &bsPhi , "bsPhi/F" , &b_bsPhi );
+
+
+    setBranch( "bsLxy", &bsLxy , "bsLxy/F" , &b_bsLxy );
+    setBranch( "bsCt2D", &bsCt2D , "bsCt2D/F" , &b_bsCt2D );
+    setBranch( "bsCt3D", &bsCt3D , "bsCt3D/F" , &b_bsCt3D );
 
     setBranch( "hltFired", &hltFired , "hltFired/I" , &b_hltFired );
     setBranch( "isTight", &isTight , "isTight/I" , &b_isTight );
@@ -37,10 +41,12 @@ void initTree() {
 }
 
     int hltFired, isTight, hasMuon, utility;
-    float bsMass, bsLxy, bsPt, bsEta, bsPhi, bsCTxy, bsCTxyz;
+    int run, evt, lumi;
+    float bsMass, bsPt, bsEta, bsPhi, bsLxy, bsCt2D, bsCt3D;
 
-    TBranch *b_bsMass, *b_bsLxy, *b_bsPt, *b_bsEta, *b_bsPhi, *b_bsCTxy, *b_bsCTxyz;
     TBranch *b_hltFired, *b_isTight, *b_hasMuon, *b_utility;
+    TBranch *b_run, *b_evt, *b_lumi;
+    TBranch *b_bsMass, *b_bsPt, *b_bsEta, *b_bsPhi, *b_bsLxy, *b_bsCt2D, *b_bsCt3D;
 
     private:
 
