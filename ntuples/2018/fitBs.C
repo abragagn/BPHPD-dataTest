@@ -8,6 +8,7 @@ void fitBs(TString fileName = "ntu2018Av1.root"){
 
     gErrorIgnoreLevel = kFatal;
     gStyle->SetOptStat(0);
+    gStyle->SetOptFit(1111);
 
     TFile *f = new TFile(fileName);
     TString run = fileName(3,7);
@@ -21,7 +22,7 @@ void fitBs(TString fileName = "ntu2018Av1.root"){
     cuts.push_back(std::make_pair("(hltFired & 1<<2)&&!(hltFired & 1<<1)","JPsiTrkTrk"));
     cuts.push_back(std::make_pair("(hltFired & 1<<3)&&!(hltFired & 1<<1)&&!(hltFired & 1<<2)","JPsiTrk"));
     
-    //cuts.push_back(std::make_pair("(hltFired & 8)&&!(hltFired & 2)","JPsiTrkInverted"));
+    cuts.push_back(std::make_pair("(hltFired & 8)&&!(hltFired & 2)","JPsiTrkInverted"));
     //cuts.push_back(std::make_pair("(hltFired & 4)&&!(hltFired & 2)&&!(hltFired & 8)","JPsiTrkTrkInverted"));
                    
     cuts.push_back(std::make_pair("(hltFired & 1<<2)","JPsiTrkTrkNoVeto"));

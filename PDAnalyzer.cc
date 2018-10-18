@@ -171,31 +171,31 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     TVector3 vPointingBeamSpot = vSVT - vBeamSpot;
     TVector3 vBs = tB.Vect();
 
-    float Lxy3D = MassBs/tB.P() * vPointing.Dot(vBs)/vBs.Mag();;
+    float ct3D = MassBs/tB.P() * vPointing.Dot(vBs)/vBs.Mag();;
 
     vBs.SetZ(0.);
     vPointingBeamSpot.SetZ(0.);
-    float LxyLab = vPointingBeamSpot * vBs.Unit();
-    float Lxy = MassBs/tB.Pt() * LxyLab;
+    float Lxy = vPointingBeamSpot * vBs.Unit();
+    float ct = MassBs/tB.Pt() * Lxy;
 
-    int hltfired_ = 0;
+    int _hltfired = 0;
 
-    if(hlt(PDEnumString::HLT_Dimuon0_Jpsi3p5_Muon2_v)||hlt(PDEnumString::HLT_Dimuon0_Jpsi_Muon_v)) hltfired_ += 1<<1;
-    if(hlt(PDEnumString::HLT_DoubleMu4_JpsiTrkTrk_Displaced_v)) hltfired_ += 1<<2;
-    if(hlt(PDEnumString::HLT_DoubleMu4_JpsiTrk_Displaced_v)) hltfired_ += 1<<3;
+    if(hlt(PDEnumString::HLT_Dimuon0_Jpsi3p5_Muon2_v)||hlt(PDEnumString::HLT_Dimuon0_Jpsi_Muon_v)) _hltfired += 1<<1;
+    if(hlt(PDEnumString::HLT_DoubleMu4_JpsiTrkTrk_Displaced_v)) _hltfired += 1<<2;
+    if(hlt(PDEnumString::HLT_DoubleMu4_JpsiTrk_Displaced_v)) _hltfired += 1<<3;
 
-    (tWriter->bsMass)->push_back( svtMass->at(iSsB) );
-    (tWriter->bsLxy)->push_back( LxyLab );
-    (tWriter->bsCtau)->push_back( Lxy );
-    (tWriter->bsCtau3D)->push_back( Lxy3D );
+    (tWriter->bsMass) = svtMass->at(iSsB);
+    (tWriter->bsLxy) = Lxy;
+    (tWriter->bsCTxy) = ct;
+    (tWriter->bsCTxyz) = ct3D;
 
-    (tWriter->bsPt)->push_back( tB.Pt() );
-    (tWriter->bsEta)->push_back( tB.Eta() );
-    (tWriter->bsPhi)->push_back( tB.Phi() );
+    (tWriter->bsPt) = tB.Pt();
+    (tWriter->bsEta) = tB.Eta();
+    (tWriter->bsPhi) = tB.Phi();
 
-    (tWriter->isTight)->push_back( tight );
-    (tWriter->utility)->push_back( utility );
-    (tWriter->hltFired)->push_back( hltfired_ );
+    (tWriter->isTight) = tight;
+    (tWriter->utility) = utility;
+    (tWriter->hltFired) = _hltfired;
 
     tWriter->fill();
 
