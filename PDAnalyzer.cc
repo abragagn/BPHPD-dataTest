@@ -140,13 +140,15 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     if(hlt(PDEnumString::HLT_DoubleMu4_JpsiTrkTrk_Displaced_v)) jpsitktk =  true;
     if(hlt(PDEnumString::HLT_DoubleMu4_JpsiTrk_Displaced_v)) jpsitk = true;
 
-    if( !(jpsimu || jpsitktk || jpsitk) ) return false;
+    
 
     int iSsB = GetBestBstrange();
+    if( !(jpsimu || jpsitktk || jpsitk) ) iSsB= -1;
     int FF = FFCode();
      if((FF<0 && iSsB>=0) || (FF>=0 && iSsB<0)) {
          cout <<runNumber<<" "<<eventNumber<<" "<<event_tot<<" "<<FF<<" "<<iSsB<<endl;
      }
+    if( !(jpsimu || jpsitktk || jpsitk) ) return false;
     if(iSsB<0) return false; 
 
     //if((FF<0 && iSsB>=0) || (FF>=0 && iSsB<0)) cout <<"debug "<<FF<<" "<<iSsB<<endl;
