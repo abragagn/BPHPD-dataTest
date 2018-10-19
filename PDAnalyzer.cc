@@ -136,8 +136,6 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     bool jpsitktk = false;
     bool jpsitk = false;
 
-    //int FF = FFCode();
-
     if(hlt(PDEnumString::HLT_Dimuon0_Jpsi3p5_Muon2_v)||hlt(PDEnumString::HLT_Dimuon0_Jpsi_Muon_v)) jpsimu = true;
     if(hlt(PDEnumString::HLT_DoubleMu4_JpsiTrkTrk_Displaced_v)) jpsitktk =  true;
     if(hlt(PDEnumString::HLT_DoubleMu4_JpsiTrk_Displaced_v)) jpsitk = true;
@@ -151,7 +149,7 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
 
     bool _tight = false;
     int _utility = 0;
-
+    
     int iSsBtight = GetBestBstrangeTight();
     if(iSsBtight>=0) {
         _tight = true;
@@ -364,7 +362,9 @@ int PDAnalyzer::FFCode()
 
         int pvIndex=-999;
         FindPV(SVpos, PVpos, Bs, pvIndex);
-
+        
+        cout<<pvIndex<<" -- "<<GetBestPV(iSV, Bs)<<endl;
+        
         if (pvIndex < 0) continue;
 
         return iSV;
