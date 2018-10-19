@@ -33,18 +33,21 @@ void initTree() {
     setBranch( "bsCt2D", &bsCt2D , "bsCt2D/F" , &b_bsCt2D );
     setBranch( "bsCt3D", &bsCt3D , "bsCt3D/F" , &b_bsCt3D );
 
-    setBranch( "hltFired", &hltFired , "hltFired/I" , &b_hltFired );
+    setBranch( "hltJpsiMu", &hltJpsiMu , "hltJpsiMu/I" , &b_hltJpsiMu );
+    setBranch( "hltJpsiTrkTrk", &hltJpsiTrkTrk , "hltJpsiTrkTrk/I" , &b_hltJpsiTrkTrk );
+    setBranch( "hltJpsiTrk", &hltJpsiTrk , "hltJpsiTrk/I" , &b_hltJpsiTrk );
+
     setBranch( "isTight", &isTight , "isTight/I" , &b_isTight );
     setBranch( "hasMuon", &hasMuon , "hasMuon/I" , &b_hasMuon );
     setBranch( "utility", &utility , "utility/I" , &b_utility );
 
 }
 
-    int hltFired, isTight, hasMuon, utility;
+    int hltJpsiMu, hltJpsiTrkTrk, hltJpsiTrk, isTight, hasMuon, utility;
     int run, evt, lumi;
     float bsMass, bsPt, bsEta, bsPhi, bsLxy, bsCt2D, bsCt3D;
 
-    TBranch *b_hltFired, *b_isTight, *b_hasMuon, *b_utility;
+    TBranch *b_hltJpsiMu, *b_hltJpsiTrkTrk, *b_hltJpsiTrk, *b_isTight, *b_hasMuon, *b_utility;
     TBranch *b_run, *b_evt, *b_lumi;
     TBranch *b_bsMass, *b_bsPt, *b_bsEta, *b_bsPhi, *b_bsLxy, *b_bsCt2D, *b_bsCt3D;
 

@@ -63,18 +63,17 @@ class PDAnalyzer: public virtual PDAnalyzerUtil
     double ptCut; //needed for paolo's code for unknow reasons
 
     bool verbose;
-    bool use_only_gen;
     TString outputFile;
     float minPtMuon, maxEtaMuon;
 
     int nselMu;
     int nselFake;
 
-    int francescoSelectionTest1();
-    int francescoSelectionTest2();
-    int francescoSelectionTest3();
+    int FFCode();
+    void FindPV(TVector3 & sv, TVector3 & pv, TLorentzVector & BsP4, int & index);
 
-
+    TH1* hTest;
+    TH1* hTest2;
 // additional features: second ntuple
     PDSecondNtupleWriter* tWriter;                 // second ntuple
 

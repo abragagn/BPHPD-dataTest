@@ -38,7 +38,6 @@ PDAnalyzer::PDAnalyzer() {
     setUserParameter( "minPtMuon", "2." );
     setUserParameter( "maxEtaMuon", "2.4" );
     setUserParameter( "outputFile", "ntu_skim.root" );
-    setUserParameter( "use_only_gen", "f" );
 
 
 
@@ -64,7 +63,6 @@ void PDAnalyzer::beginJob() {
     getUserParameter( "verbose", verbose );
     getUserParameter( "minPtMuon", minPtMuon );
     getUserParameter( "maxEtaMuon", maxEtaMuon );
-    getUserParameter( "use_only_gen", use_only_gen );
 
     getUserParameter( "ptCut", ptCut ); //needed for paolo's code for unknow reasons
 
@@ -89,6 +87,12 @@ void PDAnalyzer::book() {
     // it's automatically marked for saving on file; the option 
     // is uneffective when not using the full utility
 
+    autoSavedObject =
+    hTest   = new TH1D( "hTest", "hTest", 200, 0, 100 );
+
+    autoSavedObject =
+    hTest2   = new TH1D( "hTest2", "hTest2", 550, -0.05, 0.5 );
+
     return;
 
 }
@@ -110,7 +114,7 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
         cout << "run: " <<   runNumber << " , "
                  << "evt: " << eventNumber << endl;
     }
-    else {
+    else{
 
         if ( (!(event_tot%10)   && event_tot<100 ) || 
      (!(event_tot %100) && event_tot<1000 ) || 
@@ -128,18 +132,31 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     convSpheCart(muoPt, muoEta, muoPhi, muoPx, muoPy, muoPz);
     convSpheCart(trkPt, trkEta, trkPhi, trkPx, trkPy, trkPz);
 
+    bool jpsimu = false;
+    bool jpsitktk = false;
+    bool jpsitk = false;
+
+    //int FF = FFCode();
+
+    if(hlt(PDEnumString::HLT_Dimuon0_Jpsi3p5_Muon2_v)||hlt(PDEnumString::HLT_Dimuon0_Jpsi_Muon_v)) jpsimu = true;
+    if(hlt(PDEnumString::HLT_DoubleMu4_JpsiTrkTrk_Displaced_v)) jpsitktk =  true;
+    if(hlt(PDEnumString::HLT_DoubleMu4_JpsiTrk_Displaced_v)) jpsitk = true;
+
+    if( !(jpsimu || jpsitktk || jpsitk) ) return false;
 
     int iSsB = GetBestBstrange();
-    if(iSsB<0) return false;
+    if(iSsB<0) return false; 
+
+    //if((FF<0 && iSsB>=0) || (FF>=0 && iSsB<0)) cout <<"debug "<<FF<<" "<<iSsB<<endl;
 
     bool _tight = false;
     int _utility = 0;
+
     int iSsBtight = GetBestBstrangeTight();
     if(iSsBtight>=0) {
         _tight = true;
         iSsB = iSsBtight;
     };
-    if(francescoSelectionTest1()>=0) _utility += 1<<1;
 
     vector <int> tkSsB = tracksFromSV(iSsB);
     int iJPsi = (subVtxFromSV(iSsB)).at(0);
@@ -147,7 +164,7 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
 
     TLorentzVector tB(0,0,0,0);
 
-    for(unsigned int i=0; i<tkSsB.size(); ++i){
+    for(uint i=0; i<tkSsB.size(); ++i){
         int j = tkSsB.at(i);
         float m = MassK;
         if( (j==tkJpsi.at(0)) || (j==tkJpsi.at(1)) ) m = MassMu;
@@ -156,12 +173,8 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
         tB += a;
     }
 
-    float ssBDz = 0;
-    for( unsigned int i=0; i<tkSsB.size(); ++i ) ssBDz+=trkDz->at(tkSsB[i]);
-    ssBDz/=tkSsB.size();
-
-     int iPV = GetBestPV(iSsB, tB);
-    if(iPV<=0) return false;
+    int iPV = GetBestPV(iSsB, tB);
+    if(iPV<0) return false;
 
     TVector3 vSVT( svtX->at(iSsB), svtY->at(iSsB), svtZ->at(iSsB) );
     TVector3 vPV( pvtX->at(iPV), pvtY->at(iPV), pvtZ->at(iPV) );
@@ -171,18 +184,12 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     TVector3 vPointingBeamSpot = vSVT - vBeamSpot;
     TVector3 vBs = tB.Vect();
 
-    float ct3D = MassBs/tB.P() * vPointing.Dot(vBs)/vBs.Mag();;
+    float ct3D = MassBs/tB.P() * vPointing.Dot(vBs)/vBs.Mag();
 
     vBs.SetZ(0.);
     vPointingBeamSpot.SetZ(0.);
     float Lxy = vPointingBeamSpot * vBs.Unit();
     float ct = MassBs/tB.Pt() * Lxy;
-
-    int _hltfired = 0;
-
-    if(hlt(PDEnumString::HLT_Dimuon0_Jpsi3p5_Muon2_v)||hlt(PDEnumString::HLT_Dimuon0_Jpsi_Muon_v)) _hltfired += 1<<1;
-    if(hlt(PDEnumString::HLT_DoubleMu4_JpsiTrkTrk_Displaced_v)) _hltfired += 1<<2;
-    if(hlt(PDEnumString::HLT_DoubleMu4_JpsiTrk_Displaced_v)) _hltfired += 1<<3;
 
 
     (tWriter->run) = runNumber;
@@ -200,9 +207,48 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
 
     (tWriter->isTight) = _tight;
     (tWriter->utility) = _utility;
-    (tWriter->hltFired) = _hltfired;
+    (tWriter->hltJpsiMu) = jpsimu;
+    (tWriter->hltJpsiTrkTrk) = jpsitktk;
+    (tWriter->hltJpsiTrk) = jpsitk;
 
     tWriter->fill();
+
+/*    if( jpsitktk ){
+        cout<<endl<<"run "<<runNumber<<" --- evt "<<eventNumber<<" --- iSvt "<<iSsB<<" --- HLT "<<jpsimu<<jpsitktk<<jpsitk<<endl;
+        cout.precision(4);
+        cout<<setw(6)<<left<< "svtX "   <<setw(5)<<   vSVT.X() <<endl;
+        cout<<setw(6)<<left<< "svtY "   <<setw(5)<<   vSVT.Y() <<endl;
+        cout<<setw(6)<<left<< "bsX "   <<setw(5)<<   vBeamSpot.X() <<endl;
+        cout<<setw(6)<<left<< "bsY "   <<setw(5)<<   vBeamSpot.Y() <<endl;
+
+        cout<<setw(6)<<left<< "pt "   <<setw(5)<<   tB.Pt() <<endl;
+        cout<<setw(6)<<left<< "eta "  <<setw(5)<<   tB.Eta() <<endl;
+        cout<<setw(6)<<left<< "Lxy "  <<setw(5)<<   Lxy     <<endl;
+        cout<<setw(6)<<left<< "1/\u03B2\u03B3  "  <<setw(5)<<   MassBs/tB.Pt()     <<endl;
+        cout<<setw(6)<<left<< "ct2D " <<setw(5)<<   ct      <<endl;
+        cout<<setw(6)<<left<< "ct3D " <<setw(5)<<   ct3D    <<endl;        
+    }
+
+*/    if(use_gen){
+
+        vector <int> ListLongLivedB;
+        vector <int> ListB;
+        int genBindex = -1;
+
+        for( uint i=0 ; i<genId->size() ; ++i ){
+            if(TagMixStatus( i ) == 2) continue;
+            uint Code = abs(genId->at(i));
+            if( Code == 511 || Code == 521 || Code == 531 || Code == 541 || Code == 5122 ) ListLongLivedB.push_back(i);
+        }
+
+        genBindex = GetClosestGenLongLivedB( tB.Eta(), tB.Phi(), tB.Pt(), &ListLongLivedB);
+
+        if(genBindex>=0) cout<<setw(6)<<left<< "ctGen " <<setw(5)<<   GetCT(genBindex)    <<endl;
+
+        if(genBindex>=0) hTest->Fill(GetCT(genBindex)-ct3D);
+
+
+    }
 
 
 // to skim the N-tuple "uncomment" the following line
@@ -239,80 +285,113 @@ void PDAnalyzer::save() {
 
 
 // ======MY FUNCTIONS===============================================================================
-int PDAnalyzer::francescoSelectionTest1() // no ct cut
+int PDAnalyzer::FFCode()
 {
-    int index = -1;
-    float bestChi2 = 1e9;
-    for( unsigned short int iB=0; iB<nSVertices; ++iB ){
 
-       if((svtType->at(iB)!=PDEnumString::svtBsJPsiPhi) ) continue;
+    for ( int iSV = 0; iSV < nSVertices; ++iSV ){
 
-       int iJPsi = (subVtxFromSV(iB)).at(0);
-       int iPhi = (subVtxFromSV(iB)).at(1);
-       vector <int> tkSsB = tracksFromSV(iB);
-       vector <int> tkJpsi = tracksFromSV(iJPsi);
-       vector <int> tkPhi = tracksFromSV(iPhi);
+        //Select the Bs vertex
+        if ( svtType->at( iSV ) != PDEnumString::svtBsJPsiPhi) continue;
 
-       //JPSI
-        if(fabs(svtMass->at(iJPsi) - MassJPsi) > 0.15 ) continue;
+        int HLT_Jtktk = -1;
+        int HLT_Jmu = -1;
+        int HLT_Jtk = -1;
+            
+        for (int path=0; path<nHLTStatus; path++){
+            if (!hltRun->at(path)) continue;
 
-        if(trkPt->at(tkJpsi[0]) < 4.0 ) continue;
-        if(trkPt->at(tkJpsi[1]) < 4.0 ) continue;
-        if(fabs(trkEta->at(tkJpsi[0])) > 2.1) continue;
-        if(fabs(trkEta->at(tkJpsi[1])) > 2.1) continue;
+            if (!(hltPath->at(path)==PDEnumString::HLT_DoubleMu4_JpsiTrkTrk_Displaced_v 
+            || hltPath->at(path)==PDEnumString::HLT_Dimuon0_Jpsi_Muon_v 
+            || hltPath->at(path)==PDEnumString::HLT_DoubleMu4_JpsiTrk_Displaced_v 
+            || hltPath->at(path)==PDEnumString::HLT_Dimuon0_Jpsi3p5_Muon2_v)) continue;
 
-        TLorentzVector tJPsi(0,0,0,0);
-        for( unsigned int i=0; i<tkJpsi.size(); ++i ){
-           int j = tkJpsi[i];
-           TLorentzVector a;
-           a.SetPtEtaPhiM( trkPt->at(j), trkEta->at(j), trkPhi->at(j), MassMu );
-           tJPsi += a;
-        }
-
-
-        if(tJPsi.Pt() < 7.0) continue;
-
-       //PHI
-        if(fabs(svtMass->at(iPhi) - MassPhi) > 0.01 ) continue;
-        if(trkPt->at(tkPhi[0]) < 0.7) continue;
-        if(trkPt->at(tkPhi[1]) < 0.7) continue;
-        if(fabs(trkEta->at(tkPhi[0])) > 2.5) continue;
-        if(fabs(trkEta->at(tkPhi[1])) > 2.5) continue;
-
-        int Kp_Hits = trkHitPattern->at(tkPhi[0]);
-        int Km_Hits = trkHitPattern->at(tkPhi[1]);
-
-        int kpnpst = ( int(Kp_Hits) / 100 ) % 10000;
-        int kpntrk = kpnpst % 100;
-
-        int kmnpst = ( int(Km_Hits) / 100 ) % 10000;
-        int kmntrk = kmnpst % 100;
-
-        if (kmntrk<4 || kpntrk<4 ) continue;
-
-        //BS
-        if( svtMass->at(iB)<5.2 || svtMass->at(iB)>5.65 ) continue;
-
-        TLorentzVector tB(0,0,0,0);
-
-        for( unsigned int i=0; i<tkSsB.size(); ++i ){
-            int j = tkSsB[i];
-            float m = MassK;
-            if( j == tkJpsi[0] || j == tkJpsi[1] ) m = MassMu;
-            TLorentzVector a;
-            a.SetPtEtaPhiM( trkPt->at(j), trkEta->at(j), trkPhi->at(j), m );
-            tB += a;
-        }
-
-        if(tB.Pt() < 8.0) continue;
-        if(fabs(tB.Eta()) > 2.4) continue;
-
-        if( ChiSquaredProbability( svtChi2->at(iB), svtNDOF->at(iB) ) < 0.02 ) continue;
-
-        if( svtChi2->at(iB)>bestChi2 ) continue;
-        index = iB;
-        bestChi2 = svtChi2->at(iB);
+            if (hltPath->at(path)==PDEnumString::HLT_DoubleMu4_JpsiTrkTrk_Displaced_v) HLT_Jtktk=hltAccept->at(path);
+            else if (hltPath->at(path)==PDEnumString::HLT_Dimuon0_Jpsi_Muon_v || hltPath->at(path)==PDEnumString::HLT_Dimuon0_Jpsi3p5_Muon2_v) HLT_Jmu=hltAccept->at(path);
+            else if (hltPath->at(path)==PDEnumString::HLT_DoubleMu4_JpsiTrk_Displaced_v) HLT_Jtk=hltAccept->at(path);
 
         }
-        return index;
+
+        if( !(HLT_Jtktk || HLT_Jmu || HLT_Jtk) ) return -1;
+
+        const vector<int>& tks = tracksFromSV( iSV );
+        int n = tks.size();
+
+        if (!n){cout<<"!n"<<endl; continue;}
+        const vector<int>& sub = subVtxFromSV( iSV );
+        if (sub.size() !=2){cout<<"sub.size() !=2"<<endl; continue;}
+
+        TLorentzVector mu_p, mu_m, k_p, k_m, Bs, Jpsi, Phi, BsNoRefit, JpsiNoRefit, PhiNoRefit;
+        std::vector<int> mu_idx, k_idx;
+        TVector3 SVpos, PVpos;
+
+        SVpos.SetXYZ(svtX->at( iSV ),svtY->at( iSV ),svtZ->at( iSV ));
+
+        for (uint k=0; k<sub.size(); k++){
+            if (svtType->at(sub[k]) == PDEnumString::svtJPsi){
+
+                const vector<int>& mutks = tracksFromSV( sub[k] );
+                for (uint t=0; t< mutks.size(); ++t) mu_idx.push_back(mutks[t]); 
+
+            } else if (svtType->at(sub[k]) == PDEnumString::svtPhi){
+
+                const vector<int>& ktks = tracksFromSV( sub[k] );
+                for (uint t=0; t< ktks.size(); ++t) k_idx.push_back(ktks[t]); 
+            }
+
+        }
+
+        if (k_idx.size()!=2 || mu_idx.size()!=2  ){cout<<"k_idx.size()!=2 || mu_idx.size()!=2"<<endl; continue;}
+
+        if (trkCharge->at(mu_idx[0]) >0){
+            mu_p.SetPtEtaPhiM(trkPt->at(mu_idx[0]),trkEta->at(mu_idx[0]),trkPhi->at(mu_idx[0]),MassMu);
+            mu_m.SetPtEtaPhiM(trkPt->at(mu_idx[1]),trkEta->at(mu_idx[1]),trkPhi->at(mu_idx[1]),MassMu);
+        } else if (trkCharge->at(mu_idx[0]) < 0){
+            mu_m.SetPtEtaPhiM(trkPt->at(mu_idx[0]),trkEta->at(mu_idx[0]),trkPhi->at(mu_idx[0]),MassMu);
+            mu_p.SetPtEtaPhiM(trkPt->at(mu_idx[1]),trkEta->at(mu_idx[1]),trkPhi->at(mu_idx[1]),MassMu);
+        }
+
+        if (trkCharge->at(k_idx[0]) >0){
+            k_p.SetPtEtaPhiM(trkPt->at(k_idx[0]),trkEta->at(k_idx[0]),trkPhi->at(k_idx[0]),MassK);
+            k_m.SetPtEtaPhiM(trkPt->at(k_idx[1]),trkEta->at(k_idx[1]),trkPhi->at(k_idx[1]),MassK);
+        } else if (trkCharge->at(k_idx[0]) < 0){
+            k_m.SetPtEtaPhiM(trkPt->at(k_idx[0]),trkEta->at(k_idx[0]),trkPhi->at(k_idx[0]),MassK);
+            k_p.SetPtEtaPhiM(trkPt->at(k_idx[1]),trkEta->at(k_idx[1]),trkPhi->at(k_idx[1]),MassK);
+        }
+
+        Jpsi=mu_p + mu_m;
+        Phi=k_p + k_m;
+        Bs = Jpsi + Phi;
+
+        int pvIndex=-999;
+        FindPV(SVpos, PVpos, Bs, pvIndex);
+
+        if (pvIndex < 0) continue;
+
+        return iSV;
+    }
+
+    return -1;
+}
+
+
+void PDAnalyzer::FindPV(TVector3 & sv, TVector3 & pv, TLorentzVector & BsP4, int & index) {
+  
+  TVector3 BsP3=BsP4.Vect();
+  TVector3 tmpPV;
+  float tmpCos=-999.;
+
+  int iPV;
+  for ( iPV = 0; iPV < nPVertices; ++iPV ) {
+    tmpPV.SetXYZ(pvtX->at(iPV),pvtY->at(iPV),pvtZ->at(iPV));
+    TVector3 diff= sv-tmpPV;
+    if (abs(sv.Z()-tmpPV.Z())>0.5) continue; 
+    float cosPoint=cos(diff.Angle(BsP3));
+    if (cosPoint > tmpCos){
+      tmpCos=cosPoint;
+      pv.SetXYZ(pvtX->at(iPV),pvtY->at(iPV),pvtZ->at(iPV));
+      index=iPV;
+    }
+  }  
+
+  return;
 }
