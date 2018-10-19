@@ -143,6 +143,10 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     if( !(jpsimu || jpsitktk || jpsitk) ) return false;
 
     int iSsB = GetBestBstrange();
+    int FF = FFCode();
+     if((FF<0 && iSsB>=0) || (FF>=0 && iSsB<0)) {
+         cout <<runNumber<<" "<<eventNumber<<" "<<event_tot<<" "<<FF<<" "<<iSsB<<endl;
+     }
     if(iSsB<0) return false; 
 
     //if((FF<0 && iSsB>=0) || (FF>=0 && iSsB<0)) cout <<"debug "<<FF<<" "<<iSsB<<endl;
@@ -362,9 +366,7 @@ int PDAnalyzer::FFCode()
 
         int pvIndex=-999;
         FindPV(SVpos, PVpos, Bs, pvIndex);
-        
-        cout<<pvIndex<<" -- "<<GetBestPV(iSV, Bs)<<endl;
-        
+               
         if (pvIndex < 0) continue;
 
         return iSV;
