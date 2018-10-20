@@ -149,11 +149,7 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     int iSsB = GetBestBstrange();
     if( !(jpsimu || jpsitktk || jpsitk) ) iSsB= -1;
     int FF = FFCode();
-    if(iSsB>=0 || FF>=0) n2++;
-     if(FF!=iSsB) {
-         cout <<runNumber<<" "<<eventNumber<<" "<<event_tot<<" "<<FF<<" "<<iSsB<<endl;
-         n1++;
-     }
+
     if( !(jpsimu || jpsitktk || jpsitk) ) return false;
     if(iSsB<0) return false; 
 
@@ -186,6 +182,12 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     int iPV = GetBestPV(iSsB, tB);
     if(iPV<0) return false;
 
+     if(iSsB>=0 || FF>=0) n2++;
+     if(FF!=iSsB) {
+         cout <<runNumber<<" "<<eventNumber<<" "<<event_tot<<" "<<FF<<" "<<iSsB<<endl;
+         n1++;
+     }
+    
     TVector3 vSVT( svtX->at(iSsB), svtY->at(iSsB), svtZ->at(iSsB) );
     TVector3 vPV( pvtX->at(iPV), pvtY->at(iPV), pvtZ->at(iPV) );
     TVector3 vBeamSpot( bsX, bsY, bsZ );
@@ -397,11 +399,8 @@ void PDAnalyzer::FindPV(TVector3 & sv, TVector3 & pv, TLorentzVector & BsP4, int
   for ( iPV = 0; iPV < nPVertices; ++iPV ) {
     tmpPV.SetXYZ(pvtX->at(iPV),pvtY->at(iPV),pvtZ->at(iPV));
     TVector3 diff= sv-tmpPV;
-    cout<<endl<<index;
-    if (abs(sv.Z()-tmpPV.Z())>0.5){cout<<" "<<abs(sv.Z()-tmpPV.Z()); continue;}
-    cout<<" "<<abs(sv.Z()-tmpPV.Z())<<" <---- "; 
+    if (abs(sv.Z()-tmpPV.Z())>0.5) continue;
     float cosPoint=cos(diff.Angle(BsP3));
-    cout<<" "<<cosPoint;
     if (cosPoint > tmpCos){
       tmpCos=cosPoint;
       pv.SetXYZ(pvtX->at(iPV),pvtY->at(iPV),pvtZ->at(iPV));
