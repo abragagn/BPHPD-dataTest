@@ -2,7 +2,7 @@
 #include <sstream>
 #include <string>
 #include <math.h>
-#include <vector>
+#include <vector>Ge
 #include <algorithm>
 
 #include "PDAnalyzer.h"
@@ -257,9 +257,9 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
 
         genBindex = GetClosestGenLongLivedB( tB.Eta(), tB.Phi(), tB.Pt(), &ListLongLivedB);
 
-        if(genBindex>=0) cout<<setw(6)<<left<< "ctGen " <<setw(5)<<   GetCT(genBindex)    <<endl;
+        if(genBindex>=0) cout<<setw(6)<<left<< "ctGen " <<setw(5)<<   GetGenCT(genBindex)    <<endl;
 
-        if(genBindex>=0) hTest->Fill(GetCT(genBindex)-ct3D);
+        if(genBindex>=0) hTest->Fill(GetGenCT(genBindex)-ct3D);
 
 
     }
