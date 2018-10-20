@@ -25,6 +25,8 @@
 
 using namespace std;
 
+int n1, n2;
+
 //pdTreeAnalyze /lustre/cmswork/abragagn/ntuList/charmonium2017Lists/Charmonium_Run2017B-31Mar2018-v1_MINIAOD_DCAP.list hist.root -v outputFile ntu.root -v histoMode RECREATE -v use_gen f -n 10000
 
 PDAnalyzer::PDAnalyzer() {
@@ -75,6 +77,9 @@ void PDAnalyzer::beginJob() {
 //  DataSetFilter::beginJob();                                       // dataset filter
     tWriter = new PDSecondNtupleWriter;                     // second ntuple
     tWriter->open( getUserParameter("outputFile"), "RECREATE" ); // second ntuple
+    
+    n1 = 0;
+    n2 = 0;
 
     return;
 
@@ -144,8 +149,10 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     int iSsB = GetBestBstrange();
     if( !(jpsimu || jpsitktk || jpsitk) ) iSsB= -1;
     int FF = FFCode();
+    if(iSsB>=0 || FF>=0) n2++;
      if(FF!=iSsB) {
          cout <<runNumber<<" "<<eventNumber<<" "<<event_tot<<" "<<FF<<" "<<iSsB<<endl;
+         n1++;
      }
     if( !(jpsimu || jpsitktk || jpsitk) ) return false;
     if(iSsB<0) return false; 
@@ -269,7 +276,7 @@ void PDAnalyzer::endJob() {
 // additional features
 //  DataSetFilter::endJob();                                             // dataset filter
     tWriter->close();                                                           // second ntuple
-
+    cout<<endl<<(float)n1/n2<<endl;
     return;
 }
 
