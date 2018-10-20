@@ -398,7 +398,8 @@ void PDAnalyzer::FindPV(TVector3 & sv, TVector3 & pv, TLorentzVector & BsP4, int
     tmpPV.SetXYZ(pvtX->at(iPV),pvtY->at(iPV),pvtZ->at(iPV));
     TVector3 diff= sv-tmpPV;
     cout<<endl<<index;
-    if (abs(sv.Z()-tmpPV.Z())>0.5){cout<<" "<<abs(sv.Z()-tmpPV.Z()); continue;} 
+    if (abs(sv.Z()-tmpPV.Z())>0.5){cout<<" "<<abs(sv.Z()-tmpPV.Z()); continue;}
+    cout<<" "<<abs(sv.Z()-tmpPV.Z())<<" <---- "; 
     float cosPoint=cos(diff.Angle(BsP3));
     cout<<" "<<cosPoint;
     if (cosPoint > tmpCos){
