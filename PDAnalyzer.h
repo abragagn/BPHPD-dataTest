@@ -71,6 +71,7 @@ class PDAnalyzer: public virtual PDAnalyzerUtil
 
     int FFCode();
     void FindPV(TVector3 & sv, TVector3 & pv, TLorentzVector & BsP4, int & index);
+    int GetBestBstrangeTest();
 
     TH1* hTest;
     TH1* hTest2;
