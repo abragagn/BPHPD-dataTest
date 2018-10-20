@@ -324,7 +324,7 @@ int PDAnalyzer::FFCode()
 
         }
 
-        if( !(HLT_Jtktk || HLT_Jmu || HLT_Jtk) ){cout<<"hlt"<<endl; continue;}
+        if( !(HLT_Jtktk || HLT_Jmu || HLT_Jtk) ) continue;
 
         const vector<int>& tks = tracksFromSV( iSV );
         int n = tks.size();
