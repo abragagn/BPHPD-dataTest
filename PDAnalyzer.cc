@@ -139,13 +139,12 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     if(hlt(PDEnumString::HLT_Dimuon0_Jpsi3p5_Muon2_v)||hlt(PDEnumString::HLT_Dimuon0_Jpsi_Muon_v)) jpsimu = true;
     if(hlt(PDEnumString::HLT_DoubleMu4_JpsiTrkTrk_Displaced_v)) jpsitktk =  true;
     if(hlt(PDEnumString::HLT_DoubleMu4_JpsiTrk_Displaced_v)) jpsitk = true;
-
     
 
     int iSsB = GetBestBstrange();
     if( !(jpsimu || jpsitktk || jpsitk) ) iSsB= -1;
     int FF = FFCode();
-     if((FF<0 && iSsB>=0) || (FF>=0 && iSsB<0)) {
+     if(FF!=iSsB) {
          cout <<runNumber<<" "<<eventNumber<<" "<<event_tot<<" "<<FF<<" "<<iSsB<<endl;
      }
     if( !(jpsimu || jpsitktk || jpsitk) ) return false;
@@ -291,7 +290,8 @@ void PDAnalyzer::save() {
 // ======MY FUNCTIONS===============================================================================
 int PDAnalyzer::FFCode()
 {
-
+    int index = -1;
+    float bestChi2 = 1e9;
     for ( int iSV = 0; iSV < nSVertices; ++iSV ){
 
         //Select the Bs vertex
@@ -371,10 +371,12 @@ int PDAnalyzer::FFCode()
                
         if (pvIndex < 0) continue;
 
-        return iSV;
+        if( svtChi2->at(iSV)>bestChi2 ) continue;
+        index = iSV;
+        bestChi2 = svtChi2->at(iSV);
     }
 
-    return -1;
+    return index;
 }
 
 
