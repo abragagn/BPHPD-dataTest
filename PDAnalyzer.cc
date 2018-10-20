@@ -146,7 +146,7 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     if(hlt(PDEnumString::HLT_DoubleMu4_JpsiTrk_Displaced_v)) jpsitk = true;
     
 
-    int iSsB = GetBestBstrange();
+    int iSsB = GetBestBstrangeTest();
     if( !(jpsimu || jpsitktk || jpsitk) ) iSsB= -1;
     int FF = FFCode();
 
@@ -189,22 +189,6 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
          cout<<iSsB<<" "<<svtMass->at(iSsB)<<" "<<svtChi2->at(iSsB)<<endl;
          n1++;
      }
-    
-    TVector3 vSVT( svtX->at(iSsB), svtY->at(iSsB), svtZ->at(iSsB) );
-    TVector3 vPV( pvtX->at(iPV), pvtY->at(iPV), pvtZ->at(iPV) );
-    TVector3 vBeamSpot( bsX, bsY, bsZ );
-    
-    TVector3 vPointing = vSVT - vPV;
-    TVector3 vPointingBeamSpot = vSVT - vBeamSpot;
-    TVector3 vBs = tB.Vect();
-
-    float ct3D = MassBs/tB.P() * vPointing.Dot(vBs)/vBs.Mag();
-
-    vBs.SetZ(0.);
-    vPointingBeamSpot.SetZ(0.);
-    float Lxy = vPointingBeamSpot * vBs.Unit();
-    float ct = MassBs/tB.Pt() * Lxy;
-
 
     (tWriter->run) = runNumber;
     (tWriter->evt) = eventNumber;
@@ -216,8 +200,8 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     (tWriter->bsPhi) = tB.Phi();
 
     (tWriter->bsLxy) = Lxy;
-    (tWriter->bsCt2D) = ct;
-    (tWriter->bsCt3D) = ct3D;
+    (tWriter->bsCt2D) = GetCt2D(tb, iSsB);
+    (tWriter->bsCt3D) = GetCt3D(tb, iSsB, iPV);
 
     (tWriter->isTight) = _tight;
     (tWriter->utility) = _utility;
@@ -411,4 +395,22 @@ void PDAnalyzer::FindPV(TVector3 & sv, TVector3 & pv, TLorentzVector & BsP4, int
   }  
 
   return;
+}
+
+int PDAnalyzer::GetBestBstrangeTest()
+{
+    int index = -1;
+    float bestChi2 = 1e9;
+    for( uint iB=0; iB<nSVertices; ++iB ){
+
+       if((svtType->at(iB)!=PDEnumString::svtBsJPsiPhi) ) continue;
+        cout<<svtChi2->at(iB)<<endl;
+       if( svtMass->at(iB)<BsMassRange[0] || svtMass->at(iB)>BsMassRange[1] ) continue;
+
+       if( svtChi2->at(iB)>bestChi2 ) continue;
+       index = iB;
+       bestChi2 = svtChi2->at(iB);
+
+    }
+    return index;
 }
