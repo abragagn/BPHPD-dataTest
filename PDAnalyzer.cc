@@ -184,7 +184,9 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
 
      if(iSsB>=0 || FF>=0) n2++;
      if(FF!=iSsB) {
-         cout <<runNumber<<" "<<eventNumber<<" "<<event_tot<<" "<<FF<<" "<<iSsB<<endl;
+         cout <<event_tot<<endl;
+         cout<<FF<<" "<<svtMass->at(FF)<<" "<<svtChi2->at(FF)<<endl;
+         cout<<iSsB<<" "<<svtMass->at(iSsB)<<" "<<svtChi2->at(iSsB)<<endl;
          n1++;
      }
     
