@@ -384,15 +384,15 @@ int PDAnalyzer::GetBestBstrangeTest()
     for( int iB=0; iB<nSVertices; ++iB ){
 
        if((svtType->at(iB)!=PDEnumString::svtBsJPsiPhi) ) continue;
-        cout<<svtChi2->at(iB)<<endl;
+        cout<<iB<<" "<<svtChi2->at(iB)<<endl;
        if( svtMass->at(iB)<BsMassRange[0] || svtMass->at(iB)>BsMassRange[1] ) continue;
 
        if( svtChi2->at(iB)>bestChi2 ) continue;
        index = iB;
        bestChi2 = svtChi2->at(iB);
-       cout<<"--"<<svtChi2->at(iB)<<endl;
+       cout<<"--"<<index<<" "svtChi2->at(iB)<<endl;
 
     }
-    if(index>0)cout<<"----"<<svtChi2->at(index)<<endl;
+    if(index>0)cout<<"----"<<index<<" "<<svtChi2->at(index)<<endl;
     return index;
 }
