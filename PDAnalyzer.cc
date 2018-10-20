@@ -390,7 +390,7 @@ int PDAnalyzer::GetBestBstrangeTest()
        if( svtChi2->at(iB)>bestChi2 ) continue;
        index = iB;
        bestChi2 = svtChi2->at(iB);
-       cout<<"--"<<index<<" "svtChi2->at(iB)<<endl;
+       cout<<"--"<<index<<" "<<svtChi2->at(iB)<<endl;
 
     }
     if(index>0)cout<<"----"<<index<<" "<<svtChi2->at(index)<<endl;
