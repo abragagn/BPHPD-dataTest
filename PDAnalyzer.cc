@@ -25,8 +25,6 @@
 
 using namespace std;
 
-int n1, n2;
-
 //pdTreeAnalyze /lustre/cmswork/abragagn/ntuList/charmonium2017Lists/Charmonium_Run2017B-31Mar2018-v1_MINIAOD_DCAP.list hist.root -v outputFile ntu.root -v histoMode RECREATE -v use_gen f -n 10000
 
 PDAnalyzer::PDAnalyzer() {
@@ -78,9 +76,6 @@ void PDAnalyzer::beginJob() {
     tWriter = new PDSecondNtupleWriter;                     // second ntuple
     tWriter->open( getUserParameter("outputFile"), "RECREATE" ); // second ntuple
     
-    n1 = 0;
-    n2 = 0;
-
     return;
 
 }
@@ -146,14 +141,10 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     if(hlt(PDEnumString::HLT_DoubleMu4_JpsiTrk_Displaced_v)) jpsitk = true;
     
 
-    int iSsB = GetBestBstrangeTest();
-    if( !(jpsimu || jpsitktk || jpsitk) ) iSsB= -1;
-    int FF = FFCode();
-
+    int iSsB = GetBestBstrange();
+    //int FF = FFCode();
     if( !(jpsimu || jpsitktk || jpsitk) ) return false;
     if(iSsB<0) return false; 
-
-    //if((FF<0 && iSsB>=0) || (FF>=0 && iSsB<0)) cout <<"debug "<<FF<<" "<<iSsB<<endl;
 
     bool _tight = false;
     int _utility = 0;
@@ -181,14 +172,6 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
 
     int iPV = GetBestPV(iSsB, tB);
     if(iPV<0) return false;
-
-     if(iSsB>=0 || FF>=0) n2++;
-     if(FF!=iSsB) {
-         cout <<event_tot<<endl;
-         cout<<FF<<" "<<svtMass->at(FF)<<" "<<svtChi2->at(FF)<<endl;
-         cout<<iSsB<<" "<<svtMass->at(iSsB)<<" "<<svtChi2->at(iSsB)<<endl;
-         n1++;
-     }
 
     (tWriter->run) = runNumber;
     (tWriter->evt) = eventNumber;
@@ -244,7 +227,6 @@ void PDAnalyzer::endJob() {
 // additional features
 //  DataSetFilter::endJob();                                             // dataset filter
     tWriter->close();                                                           // second ntuple
-    cout<<endl<<(float)n1/n2<<endl;
     return;
 }
 
@@ -375,25 +357,4 @@ void PDAnalyzer::FindPV(TVector3 & sv, TVector3 & pv, TLorentzVector & BsP4, int
   }  
 
   return;
-}
-
-int PDAnalyzer::GetBestBstrangeTest()
-{
-    int index = -1;
-    float bestChi2 = 1e9;
-    for( int iB=0; iB<nSVertices; ++iB ){
-
-       if((svtType->at(iB)!=PDEnumString::svtBsJPsiPhi) ) continue;
-        cout<<iB<<" "<<svtChi2->at(iB)<<endl;
-       if( svtMass->at(iB)<BsMassRange[0] || svtMass->at(iB)>BsMassRange[1] ) continue;
-
-       if( svtChi2->at(iB)>bestChi2 ) continue;
-       index = iB;
-       bestChi2 = svtChi2->at(iB);
-       cout<<"--"<<index<<" "<<svtChi2->at(iB)<<endl;
-
-    }
-    if(index>0)cout<<"----"<<index<<" "<<svtChi2->at(index)<<endl;
-    cout<<index<<endl;
-    return index;
 }
