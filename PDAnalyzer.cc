@@ -199,9 +199,9 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     (tWriter->bsEta) = tB.Eta();
     (tWriter->bsPhi) = tB.Phi();
 
-    (tWriter->bsLxy) = Lxy;
-    (tWriter->bsCt2D) = GetCt2D(tb, iSsB);
-    (tWriter->bsCt3D) = GetCt3D(tb, iSsB, iPV);
+    (tWriter->bsLxy) = GetCt2D(tB, iSsB) / (MassBs/tB.Pt());
+    (tWriter->bsCt2D) = GetCt2D(tB, iSsB);
+    (tWriter->bsCt3D) = GetCt3D(tB, iSsB, iPV);
 
     (tWriter->isTight) = _tight;
     (tWriter->utility) = _utility;
@@ -227,27 +227,7 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
         cout<<setw(6)<<left<< "ct3D " <<setw(5)<<   ct3D    <<endl;        
     }
 
-*/    if(use_gen){
-
-        vector <int> ListLongLivedB;
-        vector <int> ListB;
-        int genBindex = -1;
-
-        for( uint i=0 ; i<genId->size() ; ++i ){
-            if(TagMixStatus( i ) == 2) continue;
-            uint Code = abs(genId->at(i));
-            if( Code == 511 || Code == 521 || Code == 531 || Code == 541 || Code == 5122 ) ListLongLivedB.push_back(i);
-        }
-
-        genBindex = GetClosestGenLongLivedB( tB.Eta(), tB.Phi(), tB.Pt(), &ListLongLivedB);
-
-        if(genBindex>=0) cout<<setw(6)<<left<< "ctGen " <<setw(5)<<   GetGenCT(genBindex)    <<endl;
-
-        if(genBindex>=0) hTest->Fill(GetGenCT(genBindex)-ct3D);
-
-
-    }
-
+*/
 
 // to skim the N-tuple "uncomment" the following line
 //  if ( flag ) fillSkim();
@@ -401,7 +381,7 @@ int PDAnalyzer::GetBestBstrangeTest()
 {
     int index = -1;
     float bestChi2 = 1e9;
-    for( uint iB=0; iB<nSVertices; ++iB ){
+    for( int iB=0; iB<nSVertices; ++iB ){
 
        if((svtType->at(iB)!=PDEnumString::svtBsJPsiPhi) ) continue;
         cout<<svtChi2->at(iB)<<endl;
