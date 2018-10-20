@@ -322,7 +322,7 @@ int PDAnalyzer::FFCode()
 
         }
 
-        if( !(HLT_Jtktk || HLT_Jmu || HLT_Jtk) ) return -1;
+        if( !(HLT_Jtktk || HLT_Jmu || HLT_Jtk) ){cout<<"hlt"<<endl; continue;}
 
         const vector<int>& tks = tracksFromSV( iSV );
         int n = tks.size();
@@ -376,7 +376,7 @@ int PDAnalyzer::FFCode()
         int pvIndex=-999;
         FindPV(SVpos, PVpos, Bs, pvIndex);
                
-        if (pvIndex < 0) continue;
+        if (pvIndex < 0){cout<<"pv"<<endl; continue;}
 
         if( svtChi2->at(iSV)>bestChi2 ) continue;
         index = iSV;
