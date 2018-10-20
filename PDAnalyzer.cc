@@ -393,6 +393,6 @@ int PDAnalyzer::GetBestBstrangeTest()
        cout<<"--"<<svtChi2->at(iB)<<endl;
 
     }
-    cout<<"----"<<svtChi2->at(iB)<<endl;
+    cout<<"----"<<svtChi2->at(index)<<endl;
     return index;
 }
