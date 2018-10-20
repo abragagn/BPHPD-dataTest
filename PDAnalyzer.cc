@@ -395,6 +395,7 @@ void PDAnalyzer::FindPV(TVector3 & sv, TVector3 & pv, TLorentzVector & BsP4, int
 
   int iPV;
   for ( iPV = 0; iPV < nPVertices; ++iPV ) {
+    cout<<index<<endl;
     tmpPV.SetXYZ(pvtX->at(iPV),pvtY->at(iPV),pvtZ->at(iPV));
     TVector3 diff= sv-tmpPV;
     if (abs(sv.Z()-tmpPV.Z())>0.5) continue; 
