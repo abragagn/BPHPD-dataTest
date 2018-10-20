@@ -378,7 +378,7 @@ int PDAnalyzer::FFCode()
         int pvIndex=-999;
         FindPV(SVpos, PVpos, Bs, pvIndex);
                
-        if (pvIndex < 0){cout<<"pv"<<endl; continue;}
+        if (pvIndex < 0) continue;
 
         if( svtChi2->at(iSV)>bestChi2 ) continue;
         index = iSV;
