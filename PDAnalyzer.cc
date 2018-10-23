@@ -35,11 +35,7 @@ PDAnalyzer::PDAnalyzer() {
     // default values can be set in the analyzer class contructor
 
     setUserParameter( "verbose", "f" );
-    setUserParameter( "minPtMuon", "2." );
-    setUserParameter( "maxEtaMuon", "2.4" );
-    setUserParameter( "outputFile", "ntu_skim.root" );
-
-
+    setUserParameter( "outputFile", "ntu.root" );
 
     setUserParameter( "ptCut", "40.0" ); //needed for paolo's code
 
@@ -61,8 +57,6 @@ void PDAnalyzer::beginJob() {
     // e.g. getUserParameter( "name", x )
 
     getUserParameter( "verbose", verbose );
-    getUserParameter( "minPtMuon", minPtMuon );
-    getUserParameter( "maxEtaMuon", maxEtaMuon );
 
     getUserParameter( "ptCut", ptCut ); //needed for paolo's code for unknow reasons
 
@@ -234,7 +228,7 @@ void PDAnalyzer::save() {
 
 
 // ======MY FUNCTIONS===============================================================================
-int PDAnalyzer::FFCode()
+/*int PDAnalyzer::FFCode()
 {
     int index = -1;
     float bestChi2 = 1e9;
@@ -347,3 +341,5 @@ void PDAnalyzer::FindPV(TVector3 & sv, TVector3 & pv, TLorentzVector & BsP4, int
 
   return;
 }
+
+*/

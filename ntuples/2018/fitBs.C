@@ -1,14 +1,13 @@
 float counting(TF1 *fit);
 void fitPeak(TH1 *hist, TString name);
-float min_ = 5.1;
-float max_ = 5.6;
-int nBins_ = 125;
+float min_ = 5.2;
+float max_ = 5.5;
+int nBins_ = 50;
 
-void fitBs(TString fileName = "ntu2018Av1.root"){
+void fitBs(TString fileName = "ntu2018Dv2.root"){
 
     gErrorIgnoreLevel = kFatal;
-    gStyle->SetOptStat(0);
-    gStyle->SetOptFit(1111);
+    //gStyle->SetOptStat(0);
 
     TFile *f = new TFile(fileName);
     TString run = fileName(3,7);
@@ -18,48 +17,48 @@ void fitBs(TString fileName = "ntu2018Av1.root"){
 
     cuts.clear();
     
-    cuts.push_back(std::make_pair("(hltFired & 1<<1)","JPsiMuon"));
-    cuts.push_back(std::make_pair("(hltFired & 1<<2)&&!(hltFired & 1<<1)","JPsiTrkTrk"));
-    cuts.push_back(std::make_pair("(hltFired & 1<<3)&&!(hltFired & 1<<1)&&!(hltFired & 1<<2)","JPsiTrk"));
+    cuts.push_back(std::make_pair("hltJpsiTrkTrk","JpsiTrkTrk"));
+    cuts.push_back(std::make_pair("hltJpsiTrkTrk&&isTight&&bsCt2D>0.020","JpsiTrkTrk_tight_ct0p020"));
     
-    cuts.push_back(std::make_pair("(hltFired & 8)&&!(hltFired & 2)","JPsiTrkInverted"));
-    //cuts.push_back(std::make_pair("(hltFired & 4)&&!(hltFired & 2)&&!(hltFired & 8)","JPsiTrkTrkInverted"));
-                   
-    cuts.push_back(std::make_pair("(hltFired & 1<<2)","JPsiTrkTrkNoVeto"));
-    cuts.push_back(std::make_pair("(hltFired & 1<<3)","JPsiTrkNoVeto"));
-
     for(int i=0; i<cuts.size(); ++i){
 
         TH1 *histMass = new TH1F("histMass","",nBins_,min_,max_);
-        TH1 *histCt = new TH1F("histCt","",100,0.0,0.6);
+        TH1 *histCt = new TH1F("histCt","",100,0.0,1.0);
         TString cut = cuts[i].first + "&&1"; 
         TString name = "ch" + run + "/" + "bsMass_" + cuts[i].second + "_" + run;
         TString nameCt = "ch" + run + "/" + "bsCt_" + cuts[i].second + "_" + run;
         TCanvas c1;
 
         t->Project("histMass", "bsMass", cut);
-        t->Project("histCt", "bsCt", cut);
-        fitPeak(histMass, name); 
+        t->Project("histCt", "bsCt2D", cut);
+        fitPeak(histMass, name);
+
+        //histMass->Draw("HIST");
+        //c1.Print(name + ".png");
         histCt->Draw("HIST");
         c1.Print(nameCt + ".png");
         histMass->Reset("ICESM");
         histCt->Reset("ICESM");
 
-        cut += "&&isTight==1";
+/*
+        cut += "&&isTight";
         name += "_tight";
         nameCt += "_tight";
         t->Project("histMass", "bsMass", cut);
-        t->Project("histCt", "bsCt", cut);
+        t->Project("histCt", "bsCt2D", cut);
         fitPeak(histMass, name);
+        //histMass->Draw("HIST");
+        //c1.Print(name + ".png");
         histCt->Draw("HIST");
         c1.Print(nameCt + ".png");
+*/
         histMass->Reset("ICESM");
         histCt->Reset("ICESM");
 
         delete histMass;
         delete histCt;
 
-        cout<<endl;
+        cout<<" --- "<<cuts[i].first<<endl;
 
     }
 
@@ -93,36 +92,31 @@ void fitPeak(TH1 *hist, TString name){
     func->SetParameter(7, hist->GetBinContent(nBins_-1));
     func->SetParameter(8, 1);
     func->SetParameter(9, 20);
-    func->SetParameter(10, 5.10);
+    func->SetParameter(10, 5.25);
 
     func->SetParLimits(0, mean-sigma, mean+sigma);
 
-    func->SetParLimits(1, 0, hist->GetEntries()/2);
-    func->SetParLimits(2, 0, hist->GetEntries()/2);
-    func->SetParLimits(3, 0, hist->GetEntries()/2);
+    func->SetParLimits(1, 0, hist->GetEntries());
+    func->SetParLimits(2, 0, hist->GetEntries());
+    func->SetParLimits(3, 0, hist->GetEntries());
 
-    func->SetParLimits(4, sigma/2, sigma*2);
-    func->SetParLimits(5, sigma/2, sigma*2);
-    func->SetParLimits(6, sigma/2, sigma*2);
+    func->SetParLimits(4, 0, sigma*2);
+    func->SetParLimits(5, 0, sigma*2);
+    func->SetParLimits(6, 0, sigma*2);
 
     func->SetParLimits(7, 0, hist->GetBinContent(nBins_-1)*1.5);
     func->SetParLimits(8, 0, hist->GetBinContent(nBins_-1));
     func->SetParLimits(9, 10, 1e3);
     func->SetParLimits(10, min_, mean);
 
-    //GRAPHICS
-
+    hist->SetMarkerStyle(20);
+    hist->SetMarkerSize(.75);
 
     TCanvas c1;
-    hist->Draw("PE1");
+    hist->Draw("PE");
     hist->Fit("func","MRLQ");
     hist->SetMinimum(0);
-    func->SetLineWidth(2);
-    func->SetNpx(5000);
-    hist->SetMarkerColor(1);
-    hist->SetMarkerStyle(20);
-    hist->SetMarkerSize(0.8);
-    
+
     TF1 *fit = hist->GetFunction("func");
     fit->Draw("same");
     
@@ -148,12 +142,6 @@ void fitPeak(TH1 *hist, TString name){
     f3->SetLineStyle(2);
     f4->SetLineStyle(2);
     f5->SetLineStyle(2);
-    f1->SetLineWidth(2);
-    f2->SetLineWidth(2);
-    f3->SetLineWidth(2);
-    f4->SetLineWidth(2);
-    f5->SetLineWidth(2);
-
 
     f1->Draw("same");
     f2->Draw("same");
@@ -169,11 +157,11 @@ void fitPeak(TH1 *hist, TString name){
     TString nEvt_;
     nEvt_.Form("# of Bs = %.0f", nEvt);
 
-    cout<<nEvt<<" ";
+    cout<<"# "<<nEvt;
 
-    auto legend = new TLegend(0.1,0.7,0.4,0.9);
+    auto legend = new TLegend(0.1,0.8,0.3,0.9);
     legend->SetHeader(nEvt_,"C");
-    legend->SetTextSize(0.05);
+    legend->SetTextSize(0.03);
     legend->Draw();
 
     c1.Print(name + ".png");
