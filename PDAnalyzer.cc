@@ -139,11 +139,9 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     if(hlt(PDEnumString::HLT_Dimuon0_Jpsi3p5_Muon2_v)||hlt(PDEnumString::HLT_Dimuon0_Jpsi_Muon_v)) jpsimu = true;
     if(hlt(PDEnumString::HLT_DoubleMu4_JpsiTrkTrk_Displaced_v)) jpsitktk =  true;
     if(hlt(PDEnumString::HLT_DoubleMu4_JpsiTrk_Displaced_v)) jpsitk = true;
-    
+    if( !(jpsimu || jpsitktk || jpsitk) ) return false;
 
     int iSsB = GetBestBstrange();
-    //int FF = FFCode();
-    if( !(jpsimu || jpsitktk || jpsitk) ) return false;
     if(iSsB<0) return false; 
 
     bool _tight = false;
@@ -155,20 +153,7 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
         iSsB = iSsBtight;
     };
 
-    vector <int> tkSsB = tracksFromSV(iSsB);
-    int iJPsi = (subVtxFromSV(iSsB)).at(0);
-    vector <int> tkJpsi = tracksFromSV(iJPsi);
-
-    TLorentzVector tB(0,0,0,0);
-
-    for(uint i=0; i<tkSsB.size(); ++i){
-        int j = tkSsB.at(i);
-        float m = MassK;
-        if( (j==tkJpsi.at(0)) || (j==tkJpsi.at(1)) ) m = MassMu;
-        TLorentzVector a;
-        a.SetPtEtaPhiM( trkPt->at(j), trkEta->at(j), trkPhi->at(j), m );
-        tB += a;
-    }
+    TLorentzVector tB = GetTLorentzVecFromJpsiX(iSsB);
 
     int iPV = GetBestPV(iSsB, tB);
     if(iPV<0) return false;
