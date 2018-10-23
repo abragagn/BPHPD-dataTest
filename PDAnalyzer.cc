@@ -88,7 +88,7 @@ void PDAnalyzer::book() {
     // is uneffective when not using the full utility
 
     autoSavedObject =
-    hTest   = new TH1D( "hTest", "hTest", 200, 0, 100 );
+    hTest   = new TH1D( "hTest", "hTest", 200, 0, 10 );
 
     autoSavedObject =
     hTest2   = new TH1D( "hTest2", "hTest2", 550, -0.05, 0.5 );
@@ -147,7 +147,7 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     bool _tight = false;
     int _utility = 0;
     
-    int iSsBtight = GetBestBstrangeTight();
+    int iSsBtight = GetBestBstrangeTight(0., 0.);
     if(iSsBtight>=0) {
         _tight = true;
         iSsB = iSsBtight;
@@ -169,7 +169,11 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
 
     (tWriter->bsLxy) = GetCt2D(tB, iSsB) / (MassBs/tB.Pt());
     (tWriter->bsCt2D) = GetCt2D(tB, iSsB);
+    (tWriter->bsCt2DErr) = GetCt2DErr(tB, iSsB, iPV);
+    (tWriter->bsCt2DSigmaUnit) = GetCt2D(tB, iSsB, iPV)/GetCt2DErr(tB, iSsB, iPV);
     (tWriter->bsCt3D) = GetCt3D(tB, iSsB, iPV);
+    (tWriter->bsCt3DErr) = GetCt3DErr(tB, iSsB, iPV);
+    (tWriter->bsCt3DSigmaUnit) = GetCt3D(tB, iSsB, iPV)/GetCt3DErr(tB, iSsB, iPV);
 
     (tWriter->isTight) = _tight;
     (tWriter->utility) = _utility;
