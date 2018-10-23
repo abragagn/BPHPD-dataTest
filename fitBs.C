@@ -18,6 +18,10 @@ void fitBs(TString fileName = "ntu2018Dv2.root"){
     cuts.clear();
     
     cuts.push_back(std::make_pair("hltJpsiTrkTrk","JpsiTrkTrk"));
+    cuts.push_back(std::make_pair("hltJpsiTrkTrk&&isTight","JpsiTrkTrk_tight"));
+    cuts.push_back(std::make_pair("hltJpsiTrkTrk&&isTight&&bsCt2D>0.015","JpsiTrkTrk_tight_ct0p015"));
+    cuts.push_back(std::make_pair("hltJpsiTrkTrk&&isTight&&bsCt2D>0.020","JpsiTrkTrk_tight_ct0p020"));
+    cuts.push_back(std::make_pair("hltJpsiTrkTrk&&isTight&&bsCt2D>0.020&&bsCt2DSigmaUnit>3","JpsiTrkTrk_tight_ct0p020_ct3sigma"));
     
     for(int i=0; i<cuts.size(); ++i){
 
@@ -31,6 +35,7 @@ void fitBs(TString fileName = "ntu2018Dv2.root"){
         t->Project("histMass", "bsMass", cut);
         t->Project("histCt", "bsCt2D", cut);
         fitPeak(histMass, name);
+
         //histMass->Draw("HIST");
         //c1.Print(name + ".png");
         histCt->Draw("HIST");
@@ -38,6 +43,7 @@ void fitBs(TString fileName = "ntu2018Dv2.root"){
         histMass->Reset("ICESM");
         histCt->Reset("ICESM");
 
+/*
         cut += "&&isTight";
         name += "_tight";
         nameCt += "_tight";
@@ -48,13 +54,14 @@ void fitBs(TString fileName = "ntu2018Dv2.root"){
         //c1.Print(name + ".png");
         histCt->Draw("HIST");
         c1.Print(nameCt + ".png");
+*/
         histMass->Reset("ICESM");
         histCt->Reset("ICESM");
 
         delete histMass;
         delete histCt;
 
-        cout<<endl;
+        cout<<" --- "<<cuts[i].first<<endl;
 
     }
 
@@ -105,8 +112,11 @@ void fitPeak(TH1 *hist, TString name){
     func->SetParLimits(9, 10, 1e3);
     func->SetParLimits(10, min_, mean);
 
+    hist->SetMarkerStyle(20);
+    hist->SetMarkerSize(.75);
+
     TCanvas c1;
-    hist->Draw("HIST");
+    hist->Draw("PE");
     hist->Fit("func","MRLQ");
     hist->SetMinimum(0);
 
@@ -150,11 +160,11 @@ void fitPeak(TH1 *hist, TString name){
     TString nEvt_;
     nEvt_.Form("# of Bs = %.0f", nEvt);
 
-    cout<<nEvt<<" ";
+    cout<<"# "<<nEvt;
 
-    auto legend = new TLegend(0.1,0.7,0.4,0.9);
+    auto legend = new TLegend(0.1,0.8,0.3,0.9);
     legend->SetHeader(nEvt_,"C");
-    legend->SetTextSize(0.05);
+    legend->SetTextSize(0.03);
     legend->Draw();
 
     c1.Print(name + ".png");
