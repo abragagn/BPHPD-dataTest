@@ -139,7 +139,6 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     if(iSsB<0) return false; 
 
     bool _tight = false;
-    int _utility = 0;
     
     int iSsBtight = GetBestBstrangeTight(0., 0.);
     if(iSsBtight>=0) {
@@ -170,7 +169,6 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     (tWriter->bsCt3DSigmaUnit) = GetCt3D(tB, iSsB, iPV)/GetCt3DErr(tB, iSsB, iPV);
 
     (tWriter->isTight) = _tight;
-    (tWriter->utility) = _utility;
     (tWriter->hltJpsiMu) = jpsimu;
     (tWriter->hltJpsiTrkTrk) = jpsitktk;
     (tWriter->hltJpsiTrk) = jpsitk;

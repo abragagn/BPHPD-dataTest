@@ -23,7 +23,7 @@ void fitBs(TString fileName = "ntu2018Dv2.root"){
     for(int i=0; i<cuts.size(); ++i){
 
         TH1 *histMass = new TH1F("histMass","",nBins_,min_,max_);
-        TH1 *histCt = new TH1F("histCt","",100,0.0,1.0);
+        TH1 *histCt = new TH1F("histCt","",100,0.0,0.25);
         TString cut = cuts[i].first + "&&1"; 
         TString name = "ch" + run + "/" + "bsMass_" + cuts[i].second + "_" + run;
         TString nameCt = "ch" + run + "/" + "bsCt_" + cuts[i].second + "_" + run;
