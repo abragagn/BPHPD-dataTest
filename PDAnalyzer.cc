@@ -151,6 +151,40 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     int iPV = GetBestPV(iSsB, tB);
     if(iPV<0) return false;
 
+    int iJPsi = (subVtxFromSV(iSsB)).at(0);
+    int iPhi = (subVtxFromSV(iSsB)).at(1);
+    vector <int> tkJpsi = tracksFromSV(iJPsi);
+    vector <int> tkPhi = tracksFromSV(iPhi);
+    TLorentzVector tJpsi, tPhi;
+
+    int muPlus, muMinus, kaonPlus, kaonMinus;
+    int Kp_Hits, Km_Hits;
+
+    for(uint i=0; i<2; ++i){
+        TLorentzVector a, b;
+        a.SetPtEtaPhiM(trkPt->at(tkJpsi[i]), trkEta->at(tkJpsi[i]), trkPhi->at(tkJpsi[i]), MassMu);
+        b.SetPtEtaPhiM(trkPt->at(tkPhi[i]), trkEta->at(tkPhi[i]), trkPhi->at(tkPhi[i]), MassK);
+        tJpsi += a;
+        tPhi += b;
+    }
+
+    if( trkCharge->at(tkJpsi[0])<0 )
+        {muPlus=tkJpsi[1]; muMinus=tkJpsi[0];}
+    else{muPlus=tkJpsi[0]; muMinus=tkJpsi[1];}
+
+    if( trkCharge->at(tkPhi[0])<0 )
+        {kaonPlus=tkPhi[1]; kaonMinus=tkPhi[0];}
+    else{kaonPlus=tkPhi[0]; kaonMinus=tkPhi[1];}
+
+    Kp_Hits = trkHitPattern->at(kaonPlus);
+    Kp_Hits = ( int(Kp_Hits) / 100 ) % 10000;
+    Kp_Hits = Kp_Hits % 100;
+
+    Km_Hits = trkHitPattern->at(kaonMinus);
+    Km_Hits = ( int(Km_Hits) / 100 ) % 10000;
+    Km_Hits = Km_Hits % 100;
+
+
     (tWriter->run) = runNumber;
     (tWriter->evt) = eventNumber;
     (tWriter->lumi) = lumiSection;
@@ -172,6 +206,25 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     (tWriter->hltJpsiMu) = jpsimu;
     (tWriter->hltJpsiTrkTrk) = jpsitktk;
     (tWriter->hltJpsiTrk) = jpsitk;
+
+    (tWriter->muPlus_Pt) = trkPt->at(muPlus);
+    (tWriter->muMinus_Pt) = trkPt->at(muMinus);
+    (tWriter->kaonPlus_Pt) = trkPt->at(kaonPlus);
+    (tWriter->kaonMinus_Pt) = trkPt->at(kaonMinus);   
+    (tWriter->muPlus_Eta) = trkEta->at(muPlus);
+    (tWriter->muMinus_Eta) = trkEta->at(muMinus);
+    (tWriter->kaonPlus_Eta) = trkEta->at(kaonPlus);
+    (tWriter->kaonMinus_Eta) = trkEta->at(kaonMinus);
+    (tWriter->kaonPlus_Hits) = Kp_Hits;
+    (tWriter->kaonMinus_Hits) = Km_Hits;
+    (tWriter->jpsiMass) = svtMass->at(iJPsi);
+    (tWriter->jpsiPt) = tJpsi.Pt();
+    (tWriter->jpsiEta) = tJpsi.Eta();
+    (tWriter->phiMass) = svtMass->at(iPhi);
+    (tWriter->phiPt) = tPhi.Pt();
+    (tWriter->phiEta) = tPhi.Eta();
+
+
 
     tWriter->fill();
 
