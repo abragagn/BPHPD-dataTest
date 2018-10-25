@@ -224,8 +224,6 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
     (tWriter->phiPt) = tPhi.Pt();
     (tWriter->phiEta) = tPhi.Eta();
 
-
-
     tWriter->fill();
 
 /*    if( jpsitktk ){
