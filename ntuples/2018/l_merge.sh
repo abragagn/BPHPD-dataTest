@@ -7,4 +7,4 @@ cd ch2018Bv2; bash merge.sh; cd ..;
 cd ch2018Cv1; bash merge.sh; cd ..;
 cd ch2018Cv2; bash merge.sh; cd ..;
 cd ch2018Cv3; bash merge.sh; cd ..;
-cd ch2018Dv1; bash merge.sh; cd ..;
+cd ch2018Dv2; bash merge.sh; cd ..;
