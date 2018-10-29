@@ -4,7 +4,7 @@ float min_ = 5.2;
 float max_ = 5.5;
 int nBins_ = 50;
 
-void fitBs(TString fileName = "ntu2018Dv2.root"){
+void fitBs18(TString fileName = "ntu2018Dv2.root"){
 
     gErrorIgnoreLevel = kFatal;
     //gStyle->SetOptStat(0);
