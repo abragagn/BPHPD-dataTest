@@ -1,6 +1,6 @@
 #!/bin/bash
 i=0;
-max=6;
+max=100;
 echo $'#!/bin/sh' > park.sh
 echo -n "hadd ntuMC2017.root" >> park.sh
 while [ "$i" -le "$max" ]; do
