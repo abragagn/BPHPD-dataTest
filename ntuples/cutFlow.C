@@ -43,8 +43,7 @@ void cutFlow(TString fileName = "ntu2018Dv2.root", TCut cutEvt = "")
     t->Project("hBsCut",    "bsMass", TString( cBsCut.GetTitle()    ));
     t->Project("hCtCut",    "bsMass", TString( cCtCut.GetTitle()    ));
 
-    cout << setprecision(0) << std::fixed;
-    cout<<setw(6)<<left<< "S" <<setw(6)<<left<< "N" <<setw(6)<<left<< "S/(S+N)" <<endl;
+    cout<<"S  N  S/(S+N)" <<endl;
     cout<<"-------------------"<<endl;
 
     fitPeak(hNoCut);
@@ -154,9 +153,12 @@ void fitPeak(TH1 *hist){
     nBkg += f4->Integral(a, b);
     nBkg += f5->Integral(a, b);
 
-    cout<<setw(6)<<left<< nSgn;
-    cout<<setw(6)<<left<< nBkg;
-    cout<<setw(6)<<left<<setprecision(2)<<std::fixed<< nSgn/(nSgn+nBkg)<<setprecision(0)<<std::fixed;
+    nSgn/=hist->GetBinWidth(0);
+    nBkg/=hist->GetBinWidth(0);
+
+    cout<<nSgn<<"   ";
+    cout<<nBkg<<"   ";
+    cout<< nSgn/(nSgn+nBkg);
     cout<<" -- "<<hist->GetTitle()<<endl;
 
     return;
