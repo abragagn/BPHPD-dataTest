@@ -4,7 +4,7 @@ float min_ = 5.2;
 float max_ = 5.5;
 int nBins_ = 50;
 
-void fitBs17(TString fileName = "ntu2016B.root"){
+void fitBs16(TString fileName = "ntu2016B.root"){
 
     gErrorIgnoreLevel = kFatal;
     //gStyle->SetOptStat(0);
@@ -18,7 +18,6 @@ void fitBs17(TString fileName = "ntu2016B.root"){
     cuts.clear();
 
     cuts.push_back(std::make_pair("hltJpsiMu&&isTight","JpsiMu_tight"));
-    cuts.push_back(std::make_pair("hltJpsiTrkTrk&&!hltJpsiMu&&isTight&&bsCt2DSigmaUnit>3.","JpsiTrkTrk_tight_ct3p0s"));
     cuts.push_back(std::make_pair("hltJpsiTrk&&!hltJpsiMu&&!hltJpsiTrkTrk&&isTight&&bsCt2DSigmaUnit>3.","JpsiTrk_tight_ct3p0s"));
     
     for(int i=0; i<cuts.size(); ++i){
